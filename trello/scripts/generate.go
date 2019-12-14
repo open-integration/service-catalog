@@ -3,4 +3,4 @@ package hack
 /*
 We are using generated template.go for serialized kubernetes assets
 */
-//go:generate go run github.com/olegsu/openc-services/trello/configs endpoints
+//go:generate go run github.com/olegsu/service-catalog/trello/configs endpoints

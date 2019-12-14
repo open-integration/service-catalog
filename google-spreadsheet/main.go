@@ -17,10 +17,10 @@ import (
 	"google.golang.org/api/sheets/v4"
 	"google.golang.org/grpc"
 
-	"github.com/olegsu/openc-services/google-spreadsheet/configs/endpoints"
-	"github.com/olegsu/openc/pkg/logger"
+	"github.com/olegsu/service-catalog/google-spreadsheet/configs/endpoints"
+	"github.com/open-integration/core/pkg/logger"
 
-	api "github.com/olegsu/openc/pkg/api/v1"
+	api "github.com/open-integration/core/pkg/api/v1"
 )
 
 type (

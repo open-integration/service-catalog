@@ -13,11 +13,11 @@ import (
 	"google.golang.org/grpc"
 
 	"github.com/adlio/trello"
-	"github.com/olegsu/openc/pkg/logger"
+	"github.com/open-integration/core/pkg/logger"
 
-	"github.com/olegsu/openc-services/trello/configs/endpoints"
+	"github.com/olegsu/service-catalog/trello/configs/endpoints"
 
-	api "github.com/olegsu/openc/pkg/api/v1"
+	api "github.com/open-integration/core/pkg/api/v1"
 )
 
 type (

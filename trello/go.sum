@@ -27,13 +27,8 @@ github.com/mattn/go-colorable v0.1.4/go.mod h1:U0ppj6V5qS13XJ6of8GYAs25YV2eR4EVc
 github.com/mattn/go-isatty v0.0.8/go.mod h1:Iq45c/XA43vh69/j3iqttzPXn0bhXyGjM0Hdxcsrc5s=
 github.com/mattn/go-isatty v0.0.10 h1:qxFzApOv4WsAL965uUPIsXzAKCZxN2p9UqdhFS4ZW10=
 github.com/mattn/go-isatty v0.0.10/go.mod h1:qgIWMr58cqv1PHHyhnkY9lrL7etaEgOFcMEpPG5Rm84=
-github.com/maxaudron/yaml v2.1.0+incompatible h1:SBXDI6NAL6PNtEsfPGPSwuZpAx+LOdRQvGc0WxZeigE=
-github.com/maxaudron/yaml v2.1.0+incompatible/go.mod h1:6VDcuwmV0qAnONuqUTD5vbx4627egUISOt6Itr/zt5k=
-github.com/olegsu/openc v0.14.0 h1:YEVRCNgsSk1kqRl1Eeo2BglzfRdvbNI82X6XZnPrYpQ=
-github.com/olegsu/openc v0.14.0/go.mod h1:huoNtAHBL493Dg54ZffEZ2V++fTzALi9YYX0ml0EEEQ=
-github.com/olegsu/openc v0.17.0 h1:J+pdCWcQo/bLbsL/oXVivVmLjK9lfXLIWgbZpRR+Q6U=
-github.com/olegsu/openc v0.17.0/go.mod h1:QXOlJrr6T/UCl4D4uLQNeOWZNA4oa3ZuY6XRVMRGxzE=
-github.com/olegsu/openc-services v0.0.0-20191207110746-53d3221df60c h1:ZfhfGwjMa5MV/ITrU6sc/dI5wCOjaSDm/GTIvmFCclc=
+github.com/open-integration/core v0.3.0 h1:O50utWqqns8G4OVL1TJvopfbzvlsYHwPVJWj1zWAads=
+github.com/open-integration/core v0.3.0/go.mod h1:MNc9B+DbUPAG36KT401aGMXJOTitXg19KkdXCuwG168=
 github.com/pkg/errors v0.8.1 h1:iURUrRGxPUNPdy5/HRSm+Yj6okJ6UtLINN0Q9M4+h3I=
 github.com/pkg/errors v0.8.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
