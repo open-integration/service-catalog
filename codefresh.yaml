@@ -18,7 +18,7 @@ steps:
     - NAME=trello sh ./.scripts/build.sh
     - NAME=google-spreadsheet sh ./.scripts/build.sh
     - cf_export VERSION=$(cat VERSION)
-    - echo $GOOGLE_SERVICE_ACCOUNT_B64 | base64 -D - > ${{CF_VOLUME_PATH}}/service-account.json
+    - echo $GOOGLE_SERVICE_ACCOUNT_B64 | base64 -d - > ${{CF_VOLUME_PATH}}/service-account.json
     - cf_export KEY_FILE_PATH=${{CF_VOLUME_PATH}}/service-account.json
 
   CreateRelease:
