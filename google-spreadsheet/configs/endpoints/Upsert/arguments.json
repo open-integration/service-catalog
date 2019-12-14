@@ -1,0 +1,27 @@
+{
+    "$id": "https://example.com/person.schema.json",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Google Spreadsheet Task Arguments Schema",
+    "type": "object",
+    "properties": {
+      "ServiceAccount": {
+        "type": "string",
+        "description": "Path to service-account.json file",
+        "minLength": 1
+      },
+      "SpreadsheetID": {
+        "type": "string",
+        "description": "ID of the spreadsheet",
+        "minLength": 1
+      },
+      "Rows": {
+        "description": "Do upsert",
+        "type": "string"
+      }
+    },
+    "required": [
+        "ServiceAccount",
+        "SpreadsheetID",
+        "Rows"
+    ]
+  }
