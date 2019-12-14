@@ -7,4 +7,4 @@ VERSION=$(cat VERSION)
 echo "Files to be uploaded:"
 echo "$FILES"
 
-gsutil mv dist/ $GCS_BUCKET
+gsutil mv dist/* $GCS_BUCKET
