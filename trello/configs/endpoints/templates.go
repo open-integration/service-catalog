@@ -50,13 +50,13 @@ templatesMap["GetCards/returns.json"] = `{
                   "type": "string"
               },
               "idShort": {
-                  "type": "integer"
+                  "type": "number"
               },
               "name": {
                   "type": "string"
               },
               "pos": {
-                  "type": "integer"
+                  "type": "number"
               },
               "email": {
                   "type": "string"
@@ -181,7 +181,7 @@ templatesMap["GetCards/returns.json"] = `{
                   "type": "boolean"
               },
               "pos": {
-                  "type": "integer"
+                  "type": "number"
               },
               "subscribed": {
                   "type": "boolean"
@@ -201,7 +201,7 @@ templatesMap["GetCards/returns.json"] = `{
           "type": "object",
           "properties": {
               "votes": {
-                  "type": "integer"
+                  "type": "number"
               },
               "viewingMemberVoted": {
                   "type": "boolean"
@@ -210,16 +210,16 @@ templatesMap["GetCards/returns.json"] = `{
                   "type": "boolean"
               },
               "checkItems": {
-                  "type": "integer"
+                  "type": "number"
               },
               "checkItemsChecked": {
-                  "type": "integer"
+                  "type": "number"
               },
               "comments": {
-                  "type": "integer"
+                  "type": "number"
               },
               "attachments": {
-                  "type": "integer"
+                  "type": "number"
               },
               "description": {
                   "type": "boolean"
@@ -254,7 +254,7 @@ templatesMap["GetCards/returns.json"] = `{
                   "type": "string"
               },
               "uses": {
-                  "type": "integer"
+                  "type": "number"
               }
           },
           "required": [

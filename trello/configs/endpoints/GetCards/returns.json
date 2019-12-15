@@ -13,13 +13,13 @@
                   "type": "string"
               },
               "idShort": {
-                  "type": "integer"
+                  "type": "number"
               },
               "name": {
                   "type": "string"
               },
               "pos": {
-                  "type": "integer"
+                  "type": "number"
               },
               "email": {
                   "type": "string"
@@ -144,7 +144,7 @@
                   "type": "boolean"
               },
               "pos": {
-                  "type": "integer"
+                  "type": "number"
               },
               "subscribed": {
                   "type": "boolean"
@@ -164,7 +164,7 @@
           "type": "object",
           "properties": {
               "votes": {
-                  "type": "integer"
+                  "type": "number"
               },
               "viewingMemberVoted": {
                   "type": "boolean"
@@ -173,16 +173,16 @@
                   "type": "boolean"
               },
               "checkItems": {
-                  "type": "integer"
+                  "type": "number"
               },
               "checkItemsChecked": {
-                  "type": "integer"
+                  "type": "number"
               },
               "comments": {
-                  "type": "integer"
+                  "type": "number"
               },
               "attachments": {
-                  "type": "integer"
+                  "type": "number"
               },
               "description": {
                   "type": "boolean"
@@ -217,7 +217,7 @@
                   "type": "string"
               },
               "uses": {
-                  "type": "integer"
+                  "type": "number"
               }
           },
           "required": [
