@@ -4,6 +4,8 @@ go 1.13
 
 require (
 	github.com/adlio/trello v1.6.0
-	github.com/open-integration/core v0.3.0
+	github.com/open-integration/core v0.4.0
 	google.golang.org/grpc v1.25.1
 )
+
+replace github.com/open-integration/core => ../../core

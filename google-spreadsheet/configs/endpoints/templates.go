@@ -7,32 +7,44 @@ func TemplatesMap() map[string]string {
     templatesMap := make(map[string]string)
 
 templatesMap["Upsert/arguments.json"] = `{
-    "$id": "https://example.com/person.schema.json",
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "Google Spreadsheet Task Arguments Schema",
-    "type": "object",
-    "properties": {
-      "ServiceAccount": {
-        "type": "string",
-        "description": "Path to service-account.json file",
-        "minLength": 1
-      },
-      "SpreadsheetID": {
-        "type": "string",
-        "description": "ID of the spreadsheet",
-        "minLength": 1
-      },
-      "Rows": {
-        "description": "Do upsert",
-        "type": "string"
-      }
+  "$id": "https://example.com/person.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Google Spreadsheet Task Arguments Schema",
+  "type": "object",
+  "properties": {
+    "ServiceAccount": {
+      "type": "string",
+      "description": "Path to service-account.json file",
+      "minLength": 1
     },
-    "required": [
-        "ServiceAccount",
-        "SpreadsheetID",
-        "Rows"
-    ]
-  }` 
+    "SpreadsheetID": {
+      "type": "string",
+      "description": "ID of the spreadsheet",
+      "minLength": 1
+    },
+    "Rows": {
+      "description": "Do upsert",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "ID": {
+            "type": "string"
+          },
+          "Data": {
+            "type": "array"
+          }
+        }
+      },
+      "minItems": 1
+    }
+  },
+  "required": [
+      "ServiceAccount",
+      "SpreadsheetID",
+      "Rows"
+  ]
+}` 
 
 templatesMap["Upsert/returns.json"] = `{
   "$schema": "http://json-schema.org/draft-07/schema#",

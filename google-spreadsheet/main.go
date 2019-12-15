@@ -28,10 +28,6 @@ type (
 		logger logger.Logger
 	}
 
-	Row struct {
-		ID   string
-		Data []interface{}
-	}
 	RemoteRow struct {
 		UpdatedAt   time.Time
 		RemoteIndex int
@@ -57,17 +53,23 @@ func (s *Service) Init(context context.Context, req *api.InitRequest) (*api.Init
 }
 
 func (s *Service) Call(context context.Context, req *api.CallRequest) (*api.CallResponse, error) {
-	log := logger.New(&logger.Options{
-		FilePath: req.Fd,
-	})
 	res := &api.CallResponse{
 		Status:  api.Status_OK,
 		Payload: "{}",
 	}
+	log := logger.New(&logger.Options{
+		FilePath: req.Fd,
+	})
+	args, err := UnmarshalArguments([]byte(req.Arguments))
+	if err != nil {
+		log.Error("Failed to load convert arguments string", "error", err.Error())
+		res.Status = api.Status_Error
+		res.Error = err.Error()
+		return res, nil
+	}
 	if req.Endpoint == "Upsert" {
-		args := req.Arguments
-		log.Debug("Args", "service-account", args["ServiceAccount"], "spreadsheet-id", args["SpreadsheetID"])
-		sp, err := connect(args["ServiceAccount"], args["SpreadsheetID"], log)
+		log.Debug("Args", "service-account", args.ServiceAccount, "spreadsheet-id", args.SpreadsheetID)
+		sp, err := connect(args.ServiceAccount, args.SpreadsheetID, log)
 		if err != nil {
 			log.Error("Failed to connect to google", "error", err.Error())
 			res.Status = api.Status_Error
@@ -75,17 +77,8 @@ func (s *Service) Call(context context.Context, req *api.CallRequest) (*api.Call
 			return res, nil
 		}
 		log.Debug("Connected to Google")
-		rows, err := load(args["Rows"])
-		if err != nil {
-			log.Error("Failed to load rows from arguments", "error", err.Error())
-			res.Status = api.Status_Error
-			res.Error = err.Error()
-			return res, nil
-		}
 
-		log.Debug("Rows loaded")
-
-		r, err := sp.Spreadsheets.Values.Get(args["SpreadsheetID"], "A:C").Do()
+		r, err := sp.Spreadsheets.Values.Get(args.SpreadsheetID, "A:C").Do()
 		if err != nil {
 			log.Error("Failed get values from speadsheet", "error", err.Error())
 			res.Status = api.Status_Error
@@ -108,8 +101,8 @@ func (s *Service) Call(context context.Context, req *api.CallRequest) (*api.Call
 		rowsToAdd := [][]interface{}{}
 		rowsToUpdate := map[string]*RemoteRow{}
 
-		for _, row := range rows {
-			remoteRow, exist := remoteRows[row.ID]
+		for _, row := range args.Rows {
+			remoteRow, exist := remoteRows[*row.ID]
 			t, err := time.Parse("02-01-2006 15:04:05", row.Data[1].(string))
 			if err != nil {
 				log.Error("Failed parse time from cell", "time", row.Data[1], "error", err.Error())
@@ -122,8 +115,8 @@ func (s *Service) Call(context context.Context, req *api.CallRequest) (*api.Call
 				r = append(r, row.Data...)
 				rowsToAdd = append(rowsToAdd, r)
 			} else if exist && t != remoteRow.UpdatedAt {
-				remoteRow.Row = row
-				rowsToUpdate[row.ID] = remoteRow
+				remoteRow.Row = &row
+				rowsToUpdate[*row.ID] = remoteRow
 			}
 		}
 
@@ -139,21 +132,21 @@ func (s *Service) Call(context context.Context, req *api.CallRequest) (*api.Call
 			}
 			rangeStr := fmt.Sprintf("%d:%d", rowToUpdate.RemoteIndex, rowToUpdate.RemoteIndex)
 			log.Debug("Updating row", "range", rangeStr, "data", data)
-			_, err := sp.Spreadsheets.Values.Update(args["SpreadsheetID"], rangeStr, vr).ValueInputOption("RAW").Do()
+			_, err := sp.Spreadsheets.Values.Update(args.SpreadsheetID, rangeStr, vr).ValueInputOption("RAW").Do()
 			if err != nil {
 				log.Error("Failed to update row", "range", rangeStr, "error", err.Error())
 			}
 		}
 
 		log.Debug("Adding new rows", "len", len(rowsToAdd))
-		_, err = sp.Spreadsheets.Values.Append(args["SpreadsheetID"], "1:1", &sheets.ValueRange{
+		_, err = sp.Spreadsheets.Values.Append(args.SpreadsheetID, "1:1", &sheets.ValueRange{
 			Values: rowsToAdd,
 		}).ValueInputOption("RAW").Do()
 		if err != nil {
 			log.Error("Failed to add new row", "error", err.Error())
 		}
 
-		_, err = sp.Spreadsheets.BatchUpdate(args["SpreadsheetID"], &sheets.BatchUpdateSpreadsheetRequest{
+		_, err = sp.Spreadsheets.BatchUpdate(args.SpreadsheetID, &sheets.BatchUpdateSpreadsheetRequest{
 			Requests: []*sheets.Request{
 				&sheets.Request{
 					ClearBasicFilter: &sheets.ClearBasicFilterRequest{

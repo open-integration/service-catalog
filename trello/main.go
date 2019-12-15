@@ -44,6 +44,7 @@ func (s *Service) Init(context context.Context, req *api.InitRequest) (*api.Init
 }
 
 func (s *Service) Call(context context.Context, req *api.CallRequest) (*api.CallResponse, error) {
+	s.logger.Debug("Request", "endpoint", req.Endpoint)
 	switch req.Endpoint {
 	case "GetCards":
 		return s.getCardsEndpoint(context, req), nil
@@ -96,8 +97,16 @@ func (s *Service) getCardsEndpoint(context context.Context, req *api.CallRequest
 		FilePath: req.Fd,
 	})
 	res := &api.CallResponse{}
-	args := req.Arguments
-	cards, err := s.request(args["App"], args["Token"], args["Board"], log)
+	args := map[string]interface{}{}
+	err := json.Unmarshal([]byte(req.Arguments), &args)
+	if err != nil {
+		log.Error("Failed to load convert arguments string", "error", err.Error())
+		res.Status = api.Status_Error
+		res.Error = err.Error()
+		return res
+	}
+	log.Debug("Converted", "args", args)
+	cards, err := s.request(args["App"].(string), args["Token"].(string), args["Board"].(string), log)
 	if err != nil {
 		res.Status = api.Status_Error
 		res.Error = err.Error()
@@ -122,10 +131,17 @@ func (s *Service) archiveCardEndpoint(context context.Context, req *api.CallRequ
 		FilePath: req.Fd,
 	})
 
-	args := req.Arguments
-	client := trello.NewClient(args["App"], args["Token"])
+	args := map[string]interface{}{}
+	err := json.Unmarshal([]byte(req.Arguments), &args)
+	if err != nil {
+		log.Error("Failed to load convert arguments string", "error", err.Error())
+		res.Status = api.Status_Error
+		res.Error = err.Error()
+		return res
+	}
+	client := trello.NewClient(args["App"].(string), args["Token"].(string))
 
-	cardsIds := strings.Split(req.Arguments["CardIDs"], ",")
+	cardsIds := strings.Split(args["CardIDs"].(string), ",")
 	for _, id := range cardsIds {
 		if id == "" {
 			continue
