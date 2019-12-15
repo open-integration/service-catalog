@@ -7,5 +7,3 @@ require (
 	github.com/open-integration/core v0.4.0
 	google.golang.org/grpc v1.25.1
 )
-
-replace github.com/open-integration/core => ../../core
