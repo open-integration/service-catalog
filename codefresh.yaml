@@ -11,7 +11,7 @@ steps:
 
   BuildServices:
     title: Build Services
-    image: golang
+    image: golang:1.13.5-alpine3.10
     working_directory: ${{CloneServices}}
     commands:
     - rm -rf dist || true 
