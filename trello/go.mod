@@ -1,4 +1,4 @@
-module github.com/olegsu/service-catalog/trello
+module github.com/open-integration/service-catalog/trello
 
 go 1.13
 

@@ -17,7 +17,7 @@ import (
 	"google.golang.org/api/sheets/v4"
 	"google.golang.org/grpc"
 
-	"github.com/olegsu/service-catalog/google-spreadsheet/configs/endpoints"
+	"github.com/open-integration/service-catalog/google-spreadsheet/configs/endpoints"
 	"github.com/open-integration/core/pkg/logger"
 
 	api "github.com/open-integration/core/pkg/api/v1"

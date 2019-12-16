@@ -2,9 +2,7 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"strings"
 
 	"net"
 	"os"
@@ -12,12 +10,13 @@ import (
 
 	"google.golang.org/grpc"
 
-	"github.com/adlio/trello"
 	"github.com/open-integration/core/pkg/logger"
 
-	"github.com/olegsu/service-catalog/trello/configs/endpoints"
+	ep "github.com/open-integration/service-catalog/trello/configs/endpoints"
 
 	api "github.com/open-integration/core/pkg/api/v1"
+
+	"github.com/open-integration/service-catalog/trello/pkg/endpoints"
 )
 
 type (
@@ -35,7 +34,7 @@ func main() {
 
 func (s *Service) Init(context context.Context, req *api.InitRequest) (*api.InitResponse, error) {
 	schemas := map[string]string{}
-	for k, v := range endpoints.TemplatesMap() {
+	for k, v := range ep.TemplatesMap() {
 		schemas[k] = v
 	}
 	return &api.InitResponse{
@@ -45,17 +44,54 @@ func (s *Service) Init(context context.Context, req *api.InitRequest) (*api.Init
 
 func (s *Service) Call(context context.Context, req *api.CallRequest) (*api.CallResponse, error) {
 	s.logger.Debug("Request", "endpoint", req.Endpoint)
+	log := logger.New(&logger.Options{
+		FilePath: req.Fd,
+	})
+
+	res := &api.CallResponse{}
+
 	switch req.Endpoint {
 	case "GetCards":
-		return s.getCardsEndpoint(context, req), nil
-	case "ArchiveCard":
-		return s.archiveCardEndpoint(context, req), nil
-	}
+		args, err := endpoints.UnmarshalGetCardsArguments([]byte(req.Arguments))
+		if resp := buildErrorResponse(err, log); resp != nil {
+			return resp, nil
+		}
 
-	return &api.CallResponse{
-		Error:  fmt.Sprintf("Endpoint %s not found", req.Endpoint),
-		Status: api.Status_OK,
-	}, nil
+		cards, err := endpoints.GetCards(context, log, &args)
+		if resp := buildErrorResponse(err, log); resp != nil {
+			return resp, nil
+		}
+
+		payload, err := cards.Marshal()
+		if resp := buildErrorResponse(err, log); resp != nil {
+			return resp, nil
+		}
+
+		res.Status = api.Status_OK
+		res.Payload = string(payload)
+		return res, nil
+
+	case "ArchiveCard":
+		args, err := endpoints.UnmarshalArchiveCardsArguments([]byte(req.Arguments))
+		if resp := buildErrorResponse(err, log); resp != nil {
+			return resp, nil
+		}
+
+		cards, err := endpoints.ArchiveCards(context, log, &args)
+		if resp := buildErrorResponse(err, log); resp != nil {
+			return resp, nil
+		}
+
+		payload, err := cards.Marshal()
+		if resp := buildErrorResponse(err, log); resp != nil {
+			return resp, nil
+		}
+
+		res.Status = api.Status_OK
+		res.Payload = string(payload)
+		return res, nil
+	}
+	return buildErrorResponse(fmt.Errorf("Endpoint %s not found", req.Endpoint), log), nil
 }
 
 func runServer(ctx context.Context, v1API api.ServiceServer, port string, log logger.Logger) error {
@@ -92,107 +128,13 @@ func runServer(ctx context.Context, v1API api.ServiceServer, port string, log lo
 	return nil
 }
 
-func (s *Service) getCardsEndpoint(context context.Context, req *api.CallRequest) *api.CallResponse {
-	log := logger.New(&logger.Options{
-		FilePath: req.Fd,
-	})
-	res := &api.CallResponse{}
-	args := map[string]interface{}{}
-	err := json.Unmarshal([]byte(req.Arguments), &args)
+func buildErrorResponse(err error, log logger.Logger) *api.CallResponse {
 	if err != nil {
-		log.Error("Failed to load convert arguments string", "error", err.Error())
-		res.Status = api.Status_Error
-		res.Error = err.Error()
-		return res
-	}
-	log.Debug("Converted", "args", args)
-	cards, err := s.request(args["App"].(string), args["Token"].(string), args["Board"].(string), log)
-	if err != nil {
-		res.Status = api.Status_Error
-		res.Error = err.Error()
-	} else {
-		data, err := json.Marshal(cards)
-		if err != nil {
-			res.Status = api.Status_Error
-			res.Error = err.Error()
-		} else {
-			res.Status = api.Status_OK
-			res.Payload = string(data)
+		log.Error(err.Error())
+		return &api.CallResponse{
+			Error:  err.Error(),
+			Status: api.Status_Error,
 		}
 	}
-	return res
-}
-
-func (s *Service) archiveCardEndpoint(context context.Context, req *api.CallRequest) *api.CallResponse {
-	res := &api.CallResponse{
-		Status: api.Status_OK,
-	}
-	log := logger.New(&logger.Options{
-		FilePath: req.Fd,
-	})
-
-	args := map[string]interface{}{}
-	err := json.Unmarshal([]byte(req.Arguments), &args)
-	if err != nil {
-		log.Error("Failed to load convert arguments string", "error", err.Error())
-		res.Status = api.Status_Error
-		res.Error = err.Error()
-		return res
-	}
-	client := trello.NewClient(args["App"].(string), args["Token"].(string))
-
-	cardsIds := strings.Split(args["CardIDs"].(string), ",")
-	for _, id := range cardsIds {
-		if id == "" {
-			continue
-		}
-		card, err := client.GetCard(id, trello.Defaults())
-		if err != nil {
-			log.Error("Failed to get card", "card", id, "error", err.Error())
-			res.Status = api.Status_Error
-			res.Error = err.Error()
-			return res
-		}
-		err = card.Update(trello.Arguments{
-			"closed": "true",
-		})
-		if err != nil {
-			log.Error("Failed to archive card", "card", id, "error", err.Error())
-			continue
-		}
-		log.Debug("Card archived", "Card", card.ID)
-	}
-	return res
-}
-
-func (s *Service) request(app string, token string, boardID string, log logger.Logger) ([]*trello.Card, error) {
-	client := trello.NewClient(app, token)
-	board, err := client.GetBoard(boardID, trello.Defaults())
-	if err != nil {
-		log.Error("Failed to get boards", "boardID", boardID, "error", err.Error())
-		return nil, err
-	}
-
-	lists, err := board.GetLists(trello.Defaults())
-	if err != nil {
-		log.Error("Failed to get board lists", "boardID", boardID, "error", err.Error())
-		return nil, err
-	}
-	cards, err := board.GetCards(trello.Defaults())
-	if err != nil {
-		log.Error("Failed to get board cards", "boardID", boardID, "error", err.Error())
-		return nil, err
-	}
-
-	for _, card := range cards {
-		var list *trello.List
-		for _, l := range lists {
-			if card.IDList == l.ID {
-				list = l
-			}
-		}
-		card.List = list
-		log.Debug("Card", "card", card.Name)
-	}
-	return cards, nil
+	return nil
 }

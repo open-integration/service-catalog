@@ -1,4 +1,4 @@
-module github.com/olegsu/service-catalog/google-spreadsheet
+module github.com/open-integration/service-catalog/google-spreadsheet
 
 go 1.13
 

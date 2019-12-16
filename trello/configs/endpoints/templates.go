@@ -6,6 +6,42 @@ package endpoints
 func TemplatesMap() map[string]string {
     templatesMap := make(map[string]string)
 
+templatesMap["ArchiveCards/arguments.json"] = `{
+    "$id": "https://example.com/person.schema.json",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Trello GetCards Task Arguments Schema",
+    "type": "object",
+    "properties": {
+      "App": {
+        "type": "string",
+        "description": "Trello Application ID",
+        "minLength": 1
+      },
+      "Token": {
+        "type": "string",
+        "description": "Trello Token",
+        "minLength": 1
+      },
+      "CardIDs": {
+        "description": "IDs to archive",
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    },
+    "required": [
+        "App",
+        "Token"
+    ]
+  }` 
+
+templatesMap["ArchiveCards/returns.json"] = `{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object"
+}
+` 
+
 templatesMap["GetCards/arguments.json"] = `{
     "$id": "https://example.com/person.schema.json",
     "$schema": "http://json-schema.org/draft-07/schema#",
