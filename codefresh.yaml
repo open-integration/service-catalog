@@ -15,6 +15,7 @@ steps:
     working_directory: ${{CloneServices}}
     commands:
     - rm -rf dist || true 
+    - go get -u github.com/gobuffalo/packr/packr
     - NAME=trello sh ./.scripts/build.sh
     - NAME=google-spreadsheet sh ./.scripts/build.sh
     - cf_export VERSION=$(cat VERSION)
