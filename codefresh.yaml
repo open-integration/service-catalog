@@ -19,7 +19,6 @@ steps:
     - go get -u github.com/gobuffalo/packr/packr
     - NAME=trello sh ./.scripts/build.sh
     - NAME=google-spreadsheet sh ./.scripts/build.sh
-    - cf_export VERSION=$(cat VERSION)
     - echo $GOOGLE_SERVICE_ACCOUNT_B64 | base64 -d - > ${{CF_VOLUME_PATH}}/service-account.json
     - cf_export KEY_FILE_PATH=${{CF_VOLUME_PATH}}/service-account.json
 

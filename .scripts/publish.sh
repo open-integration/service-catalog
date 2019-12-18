@@ -13,7 +13,7 @@ do
     FILES=$(ls -ls dist | awk 'NR>1' | awk '{print $10}')
     echo "Files to be uploaded:"
     echo "$FILES"
-    cd ..
     gsutil mv dist/* $GCS_BUCKET
+    cd ..
 done
 
