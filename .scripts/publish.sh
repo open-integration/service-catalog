@@ -2,9 +2,18 @@ echo "Authentication with GCS project $GCS_PROJECT"
 gcloud auth activate-service-account --key-file $KEY_FILE_PATH
 echo "Authenticated!"
 
-FILES=$(ls -ls dist | awk 'NR>1' | awk '{print $10}')
-VERSION=$(cat VERSION)
-echo "Files to be uploaded:"
-echo "$FILES"
+SERVICES="trello google-spreadsheet"
 
-gsutil mv dist/* $GCS_BUCKET
+echo ""
+
+for s in $SERVICES
+do  
+    cd $s
+    VERSION=$(cat VERSION)
+    FILES=$(ls -ls dist | awk 'NR>1' | awk '{print $10}')
+    echo "Files to be uploaded:"
+    echo "$FILES"
+    cd ..
+    gsutil mv dist/* $GCS_BUCKET
+done
+

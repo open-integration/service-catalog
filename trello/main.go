@@ -8,34 +8,38 @@ import (
 	"os"
 	"os/signal"
 
+	"github.com/gobuffalo/packr"
 	"google.golang.org/grpc"
 
 	"github.com/open-integration/core/pkg/logger"
 
-	ep "github.com/open-integration/service-catalog/trello/configs/endpoints"
-
 	api "github.com/open-integration/core/pkg/api/v1"
 
-	"github.com/open-integration/service-catalog/trello/pkg/endpoints"
+	"github.com/open-integration/service-catalog/trello/pkg/endpoints/archivecards"
+
+	"github.com/open-integration/service-catalog/trello/pkg/endpoints/getcards"
 )
 
 type (
 	Service struct {
 		logger logger.Logger
+		box    packr.Box
 	}
 )
 
 func main() {
 	service := &Service{
 		logger: logger.New(nil),
+		box:    packr.NewBox("./configs"),
 	}
 	runServer(context.Background(), service, os.Getenv("PORT"), service.logger)
 }
 
 func (s *Service) Init(context context.Context, req *api.InitRequest) (*api.InitResponse, error) {
 	schemas := map[string]string{}
-	for k, v := range ep.TemplatesMap() {
-		schemas[k] = v
+	for _, v := range s.box.List() {
+		schema, _ := s.box.FindString(v)
+		schemas[v] = schema
 	}
 	return &api.InitResponse{
 		JsonSchemas: schemas,
@@ -48,50 +52,46 @@ func (s *Service) Call(context context.Context, req *api.CallRequest) (*api.Call
 		FilePath: req.Fd,
 	})
 
-	res := &api.CallResponse{}
+	response := &api.CallResponse{}
 
 	switch req.Endpoint {
-	case "GetCards":
-		args, err := endpoints.UnmarshalGetCardsArguments([]byte(req.Arguments))
-		if resp := buildErrorResponse(err, log); resp != nil {
+
+	case "archivecards":
+		args, err := archivecards.UnmarshalArchivecardsArguments([]byte(req.Arguments))
+		if resp := buildErrorResponse(err); resp != nil {
 			return resp, nil
 		}
-
-		cards, err := endpoints.GetCards(context, log, &args)
-		if resp := buildErrorResponse(err, log); resp != nil {
+		res, err := archivecards.Archivecards(context, log, &args)
+		if resp := buildErrorResponse(err); resp != nil {
 			return resp, nil
 		}
-
-		payload, err := cards.Marshal()
-		if resp := buildErrorResponse(err, log); resp != nil {
+		payload, err := res.Marshal()
+		if resp := buildErrorResponse(err); resp != nil {
 			return resp, nil
 		}
+		response.Status = api.Status_OK
+		response.Payload = string(payload)
+		return response, nil
 
-		res.Status = api.Status_OK
-		res.Payload = string(payload)
-		return res, nil
-
-	case "ArchiveCard":
-		args, err := endpoints.UnmarshalArchiveCardsArguments([]byte(req.Arguments))
-		if resp := buildErrorResponse(err, log); resp != nil {
+	case "getcards":
+		args, err := getcards.UnmarshalGetcardsArguments([]byte(req.Arguments))
+		if resp := buildErrorResponse(err); resp != nil {
 			return resp, nil
 		}
-
-		cards, err := endpoints.ArchiveCards(context, log, &args)
-		if resp := buildErrorResponse(err, log); resp != nil {
+		res, err := getcards.Getcards(context, log, &args)
+		if resp := buildErrorResponse(err); resp != nil {
 			return resp, nil
 		}
-
-		payload, err := cards.Marshal()
-		if resp := buildErrorResponse(err, log); resp != nil {
+		payload, err := res.Marshal()
+		if resp := buildErrorResponse(err); resp != nil {
 			return resp, nil
 		}
+		response.Status = api.Status_OK
+		response.Payload = string(payload)
+		return response, nil
 
-		res.Status = api.Status_OK
-		res.Payload = string(payload)
-		return res, nil
 	}
-	return buildErrorResponse(fmt.Errorf("Endpoint %s not found", req.Endpoint), log), nil
+	return buildErrorResponse(fmt.Errorf("Endpoint %s not found", req.Endpoint)), nil
 }
 
 func runServer(ctx context.Context, v1API api.ServiceServer, port string, log logger.Logger) error {
@@ -128,9 +128,8 @@ func runServer(ctx context.Context, v1API api.ServiceServer, port string, log lo
 	return nil
 }
 
-func buildErrorResponse(err error, log logger.Logger) *api.CallResponse {
+func buildErrorResponse(err error) *api.CallResponse {
 	if err != nil {
-		log.Error(err.Error())
 		return &api.CallResponse{
 			Error:  err.Error(),
 			Status: api.Status_Error,

@@ -1,0 +1,9 @@
+name: trello
+goModule: github.com/open-integration/service-catalog/trello
+endpoints:
+- name: archivecards
+  arguments: ./configs/endpoints/archivecards/arguments.json
+  returns: ./configs/endpoints/archivecards/returns.json
+- name: getcards
+  arguments: ./configs/endpoints/getcards/arguments.json
+  returns: ./configs/endpoints/getcards/returns.json

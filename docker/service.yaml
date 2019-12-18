@@ -1,0 +1,9 @@
+name: docker
+goModule: github.com/open-integration/service-catalog/docker
+endpoints:
+- name: push
+  arguments: ./configs/endpoints/push/arguments.json
+  returns: ./configs/endpoints/push/returns.json
+- name: pull
+  arguments: ./configs/endpoints/pull/arguments.json
+  returns: ./configs/endpoints/pull/returns.json
