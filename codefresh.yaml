@@ -15,6 +15,7 @@ steps:
     working_directory: ${{CloneServices}}
     commands:
     - rm -rf dist || true 
+    - apk update && apk add git
     - go get -u github.com/gobuffalo/packr/packr
     - NAME=trello sh ./.scripts/build.sh
     - NAME=google-spreadsheet sh ./.scripts/build.sh
