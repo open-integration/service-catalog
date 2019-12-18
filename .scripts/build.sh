@@ -3,7 +3,7 @@ build () {
     echo "Generating temp file for $NAME"
     cd $NAME
     go generate scripts/generate.go
-    VERSION=$(cat ../VERSION)
+    VERSION=$(cat ./VERSION)
 
     echo "Building $NAME-$VERSION service fro darwin and amd64"
     GOOS=darwin GOARCH=amd64 packr build -o ./dist/$NAME-$VERSION-darwin-amd64 .
