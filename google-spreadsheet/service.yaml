@@ -1,0 +1,6 @@
+name: google-spreadsheet
+goModule: github.com/open-integration/service-catalog/google-spreadsheet
+endpoints:
+- name: upsert
+  arguments: ./configs/endpoints/upsert/arguments.json
+  returns: ./configs/endpoints/upsert/returns.json

@@ -2,50 +2,45 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"time"
 
-	"log"
 	"net"
 	"os"
 	"os/signal"
 
-	"golang.org/x/oauth2/google"
-	"google.golang.org/api/drive/v3"
-	"google.golang.org/api/sheets/v4"
 	"google.golang.org/grpc"
+	"github.com/gobuffalo/packr"
 
-	"github.com/open-integration/service-catalog/google-spreadsheet/configs/endpoints"
 	"github.com/open-integration/core/pkg/logger"
 
 	api "github.com/open-integration/core/pkg/api/v1"
+
+	
+	"github.com/open-integration/service-catalog/google-spreadsheet/pkg/endpoints/upsert"
+	
 )
 
 type (
 	Service struct {
 		logger logger.Logger
-	}
-
-	RemoteRow struct {
-		UpdatedAt   time.Time
-		RemoteIndex int
-		Row         *Row
+		box    packr.Box
 	}
 )
 
 func main() {
+
 	service := &Service{
 		logger: logger.New(nil),
+		box:    packr.NewBox("./configs"),
 	}
-	runServer(context.Background(), service, os.Getenv("PORT"))
+	runServer(context.Background(), service, os.Getenv("PORT"), service.logger)
 }
 
 func (s *Service) Init(context context.Context, req *api.InitRequest) (*api.InitResponse, error) {
 	schemas := map[string]string{}
-	for k, v := range endpoints.TemplatesMap() {
-		schemas[k] = v
+	for _, v := range s.box.List() {
+		schema, _ := s.box.FindString(v)
+		schemas[v] = schema
 	}
 	return &api.InitResponse{
 		JsonSchemas: schemas,
@@ -53,128 +48,37 @@ func (s *Service) Init(context context.Context, req *api.InitRequest) (*api.Init
 }
 
 func (s *Service) Call(context context.Context, req *api.CallRequest) (*api.CallResponse, error) {
-	res := &api.CallResponse{
-		Status:  api.Status_OK,
-		Payload: "{}",
-	}
+	s.logger.Debug("Request", "endpoint", req.Endpoint)
 	log := logger.New(&logger.Options{
 		FilePath: req.Fd,
 	})
-	args, err := UnmarshalArguments([]byte(req.Arguments))
-	if err != nil {
-		log.Error("Failed to load convert arguments string", "error", err.Error())
-		res.Status = api.Status_Error
-		res.Error = err.Error()
-		return res, nil
+
+	response := &api.CallResponse{}
+
+	switch req.Endpoint {
+	
+	case "upsert":
+		args, err := upsert.UnmarshalUpsertArguments([]byte(req.Arguments))
+		if resp := buildErrorResponse(err); resp != nil {
+			return resp, nil
+		}
+		res, err := upsert.Upsert(context, log, &args)
+		if resp := buildErrorResponse(err); resp != nil {
+			return resp, nil
+		}
+		payload, err := res.Marshal()
+		if resp := buildErrorResponse(err); resp != nil {
+			return resp, nil
+		}
+		response.Status = api.Status_OK
+		response.Payload = string(payload)
+		return response, nil
+	
 	}
-	if req.Endpoint == "Upsert" {
-		log.Debug("Args", "service-account", args.ServiceAccount, "spreadsheet-id", args.SpreadsheetID)
-		sp, err := connect(args.ServiceAccount, args.SpreadsheetID, log)
-		if err != nil {
-			log.Error("Failed to connect to google", "error", err.Error())
-			res.Status = api.Status_Error
-			res.Error = err.Error()
-			return res, nil
-		}
-		log.Debug("Connected to Google")
-
-		r, err := sp.Spreadsheets.Values.Get(args.SpreadsheetID, "A:C").Do()
-		if err != nil {
-			log.Error("Failed get values from speadsheet", "error", err.Error())
-			res.Status = api.Status_Error
-			res.Error = err.Error()
-			return res, nil
-		}
-
-		remoteRows := map[string]*RemoteRow{}
-
-		if len(r.Values) > 0 {
-			for index, ra := range r.Values[1:] { // skip header
-				t, _ := time.Parse("02-01-2006 15:04:05", ra[2].(string))
-				remoteRows[ra[0].(string)] = &RemoteRow{
-					UpdatedAt:   t,
-					RemoteIndex: index + 2,
-				}
-			}
-		}
-
-		rowsToAdd := [][]interface{}{}
-		rowsToUpdate := map[string]*RemoteRow{}
-
-		for _, row := range args.Rows {
-			remoteRow, exist := remoteRows[*row.ID]
-			t, err := time.Parse("02-01-2006 15:04:05", row.Data[1].(string))
-			if err != nil {
-				log.Error("Failed parse time from cell", "time", row.Data[1], "error", err.Error())
-				continue
-			}
-			if !exist {
-				r := []interface{}{
-					row.ID,
-				}
-				r = append(r, row.Data...)
-				rowsToAdd = append(rowsToAdd, r)
-			} else if exist && t != remoteRow.UpdatedAt {
-				remoteRow.Row = &row
-				rowsToUpdate[*row.ID] = remoteRow
-			}
-		}
-
-		for _, rowToUpdate := range rowsToUpdate {
-			data := []interface{}{
-				rowToUpdate.Row.ID,
-			}
-			data = append(data, rowToUpdate.Row.Data...)
-			vr := &sheets.ValueRange{
-				Values: [][]interface{}{
-					data,
-				},
-			}
-			rangeStr := fmt.Sprintf("%d:%d", rowToUpdate.RemoteIndex, rowToUpdate.RemoteIndex)
-			log.Debug("Updating row", "range", rangeStr, "data", data)
-			_, err := sp.Spreadsheets.Values.Update(args.SpreadsheetID, rangeStr, vr).ValueInputOption("RAW").Do()
-			if err != nil {
-				log.Error("Failed to update row", "range", rangeStr, "error", err.Error())
-			}
-		}
-
-		log.Debug("Adding new rows", "len", len(rowsToAdd))
-		_, err = sp.Spreadsheets.Values.Append(args.SpreadsheetID, "1:1", &sheets.ValueRange{
-			Values: rowsToAdd,
-		}).ValueInputOption("RAW").Do()
-		if err != nil {
-			log.Error("Failed to add new row", "error", err.Error())
-		}
-
-		_, err = sp.Spreadsheets.BatchUpdate(args.SpreadsheetID, &sheets.BatchUpdateSpreadsheetRequest{
-			Requests: []*sheets.Request{
-				&sheets.Request{
-					ClearBasicFilter: &sheets.ClearBasicFilterRequest{
-						SheetId: 0,
-					},
-				},
-				&sheets.Request{
-					SetBasicFilter: &sheets.SetBasicFilterRequest{
-						Filter: &sheets.BasicFilter{
-							Range: &sheets.GridRange{
-								StartColumnIndex: 0,
-								EndColumnIndex:   7,
-							},
-						},
-					},
-				},
-			},
-		}).Do()
-
-		if err != nil {
-			log.Error("Failed to run batch update call", "error", err.Error())
-		}
-
-	}
-	return res, nil
+	return buildErrorResponse(fmt.Errorf("Endpoint %s not found", req.Endpoint)), nil
 }
 
-func runServer(ctx context.Context, v1API api.ServiceServer, port string) error {
+func runServer(ctx context.Context, v1API api.ServiceServer, port string, log logger.Logger) error {
 	listen, err := net.Listen("tcp", ":"+port)
 	if err != nil {
 		return err
@@ -190,7 +94,7 @@ func runServer(ctx context.Context, v1API api.ServiceServer, port string) error 
 	go func() {
 		for range c {
 			// sig is a ^C, handle it
-			log.Println("shutting down gRPC server...")
+			log.Debug("shutting down gRPC server...")
 
 			server.GracefulStop()
 
@@ -199,44 +103,22 @@ func runServer(ctx context.Context, v1API api.ServiceServer, port string) error 
 	}()
 
 	// start gRPC server
-	log.Printf("starting gRPC server, listening on port %s\n", port)
+	log.Debug("starting gRPC server", "port", port)
 	err = server.Serve(listen)
 	if err != nil {
-		log.Printf("Error starting gRPC server: %s", err.Error())
+		log.Debug("Error starting gRPC server", "error", err.Error())
 		os.Exit(1)
 	}
 	return nil
 }
 
-func connect(serviceAccountFilePath string, spreadsheetID string, log logger.Logger) (*sheets.Service, error) {
-	b, err := ioutil.ReadFile(serviceAccountFilePath)
+func buildErrorResponse(err error) *api.CallResponse {
 	if err != nil {
-		return nil, err
+		return &api.CallResponse{
+			Error:  err.Error(),
+			Status: api.Status_Error,
+		}
 	}
-
-	driveScopes := []string{
-		drive.DriveScope,
-		drive.DriveAppdataScope,
-		drive.DriveFileScope,
-		drive.DriveMetadataScope,
-		drive.DriveMetadataReadonlyScope,
-		drive.DrivePhotosReadonlyScope,
-		drive.DriveReadonlyScope,
-		drive.DriveScriptsScope,
-	}
-	config, err := google.JWTConfigFromJSON(b, driveScopes...)
-	if err != nil {
-		return nil, err
-	}
-	client := config.Client(context.Background())
-	return sheets.New(client)
+	return nil
 }
 
-func load(j string) ([]*Row, error) {
-	cards := []*Row{}
-	err := json.Unmarshal([]byte(j), &cards)
-	if err != nil {
-		return nil, err
-	}
-	return cards, nil
-}
