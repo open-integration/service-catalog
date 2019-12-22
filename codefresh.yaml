@@ -15,7 +15,7 @@ steps:
     working_directory: ${{CloneServices}}
     commands:
     - rm -rf dist || true 
-    - apk update && apk add git
+    - apk update && apk add git make
     - go get -u github.com/gobuffalo/packr/packr
     - sh ./.scripts/build.sh
     - echo $GOOGLE_SERVICE_ACCOUNT_B64 | base64 -d - > ${{CF_VOLUME_PATH}}/service-account.json
