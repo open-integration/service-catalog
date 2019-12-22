@@ -1,0 +1,57 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "definitions": {
+        "githubAuthToken": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "token"
+            ]
+        },
+        "githubAuthUsernameAndPassword": {
+            "type": "object",
+            "properties": {
+                "username": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "username",
+                "password"
+            ]
+        }
+    },
+    "properties": {
+        "path": {
+            "type": "string"
+        },
+        "repo": {
+            "type": "string"
+        },
+        "provider": {
+            "type": "string",
+            "enum": ["github"],
+            "default": "github"
+        },
+        "auth": {
+            "anyOf": [
+                { "$ref": "#/definitions/githubAuthToken" },
+                { "$ref": "#/definitions/githubAuthUsernameAndPassword" }
+            ]
+        }
+    },
+    "required": [
+        "path",
+        "repo",
+        "provider"
+    ]
+}
+  

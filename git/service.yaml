@@ -1,0 +1,6 @@
+name: git
+goModule: github.com/open-integration/service-catalog/git
+endpoints:
+- name: clone
+  arguments: ./configs/endpoints/clone/arguments.json
+  returns: ./configs/endpoints/clone/returns.json

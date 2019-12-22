@@ -1,0 +1,36 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+        "tag": {
+            "type": "string"
+        },
+        "path": {
+            "type": "string"
+        },
+        "host": {
+            "type": "string",
+            "default": "unix:///var/run/docker.sock"
+        },
+        "api_version": {
+            "type": "string",
+            "default": "1.25"
+        },
+        "dockerfile": {
+            "type": "string",
+            "default": "Dockerfile"
+        },
+        "build_context": {
+            "type": "string"   
+        }
+    },
+    "required": [
+        "path",
+        "tag",
+        "host",
+        "api_version",
+        "dockerfile",
+        "build_context"
+    ]
+}
+  
