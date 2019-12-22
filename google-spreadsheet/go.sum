@@ -72,8 +72,8 @@ github.com/mattn/go-isatty v0.0.10 h1:qxFzApOv4WsAL965uUPIsXzAKCZxN2p9UqdhFS4ZW1
 github.com/mattn/go-isatty v0.0.10/go.mod h1:qgIWMr58cqv1PHHyhnkY9lrL7etaEgOFcMEpPG5Rm84=
 github.com/mitchellh/go-homedir v1.1.0/go.mod h1:SfyaCUpYCn1Vlf4IUYiD9fPX4A5wJrkLzIz1N1q0pr0=
 github.com/mitchellh/mapstructure v1.1.2/go.mod h1:FVVH3fgwuzCH5S8UJGiWEs2h04kUh9fWfEaFds41c1Y=
-github.com/open-integration/core v0.6.0 h1:IxD6d8F7jIG8Fd7HjQHEuyO78TLAX2zthSgYCk1R2Lo=
-github.com/open-integration/core v0.6.0/go.mod h1:MNc9B+DbUPAG36KT401aGMXJOTitXg19KkdXCuwG168=
+github.com/open-integration/core v0.10.0 h1:7RjTFeO6/wiDmR40M46XVuhnbOACDkRa3JrruvTRz5s=
+github.com/open-integration/core v0.10.0/go.mod h1:MNc9B+DbUPAG36KT401aGMXJOTitXg19KkdXCuwG168=
 github.com/pelletier/go-toml v1.2.0/go.mod h1:5z9KED0ma1S8pY6P1sdut58dfprrGBbd/94hg7ilaic=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=

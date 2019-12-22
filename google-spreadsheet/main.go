@@ -8,16 +8,14 @@ import (
 	"os"
 	"os/signal"
 
-	"google.golang.org/grpc"
 	"github.com/gobuffalo/packr"
+	"google.golang.org/grpc"
 
 	"github.com/open-integration/core/pkg/logger"
 
 	api "github.com/open-integration/core/pkg/api/v1"
 
-	
 	"github.com/open-integration/service-catalog/google-spreadsheet/pkg/endpoints/upsert"
-	
 )
 
 type (
@@ -56,7 +54,7 @@ func (s *Service) Call(context context.Context, req *api.CallRequest) (*api.Call
 	response := &api.CallResponse{}
 
 	switch req.Endpoint {
-	
+
 	case "upsert":
 		args, err := upsert.UnmarshalUpsertArguments([]byte(req.Arguments))
 		if resp := buildErrorResponse(err); resp != nil {
@@ -73,7 +71,7 @@ func (s *Service) Call(context context.Context, req *api.CallRequest) (*api.Call
 		response.Status = api.Status_OK
 		response.Payload = string(payload)
 		return response, nil
-	
+
 	}
 	return buildErrorResponse(fmt.Errorf("Endpoint %s not found", req.Endpoint)), nil
 }
@@ -121,4 +119,3 @@ func buildErrorResponse(err error) *api.CallResponse {
 	}
 	return nil
 }
-
