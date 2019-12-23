@@ -67,7 +67,7 @@ func Upsert(context context.Context, log logger.Logger, args *UpsertArguments) (
 	}
 	for _, rowToUpdate := range rowsToUpdate {
 		data := []interface{}{
-			rowToUpdate.Row.ID,
+			*rowToUpdate.Row.ID,
 		}
 		data = append(data, rowToUpdate.Row.Data...)
 		vr := &sheets.ValueRange{
