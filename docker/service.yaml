@@ -4,3 +4,9 @@ endpoints:
 - name: build
   arguments: ./configs/endpoints/build/arguments.json
   returns: ./configs/endpoints/build/returns.json
+- name: run
+  arguments: ./configs/endpoints/run/arguments.json
+  returns: ./configs/endpoints/run/returns.json
+- name: upsertVolume
+  arguments: ./configs/endpoints/upsertVolume/arguments.json
+  returns: ./configs/endpoints/upsertVolume/returns.json

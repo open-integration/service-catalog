@@ -1,0 +1,26 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+        "host": {
+            "type": "string",
+            "default": "unix:///var/run/docker.sock"
+        },
+        "api_version": {
+            "type": "string",
+            "default": "1.25"
+        },
+        "name": {
+            "type": "string"
+        },
+        "labels": {
+            "type": "object"
+        }
+    },
+    "required": [
+        "host",
+        "api_version",
+        "name"
+    ]
+}
+  

@@ -18,6 +18,10 @@ import (
 	
 	"github.com/open-integration/service-catalog/docker/pkg/endpoints/build"
 	
+	"github.com/open-integration/service-catalog/docker/pkg/endpoints/run"
+	
+	"github.com/open-integration/service-catalog/docker/pkg/endpoints/upsertVolume"
+	
 )
 
 type (
@@ -65,6 +69,50 @@ func (s *Service) Call(context context.Context, req *api.CallRequest) (*api.Call
 			Arguments: &args,
 		}
 		res, err := build.Build(opt)
+		if resp := buildErrorResponse(err); resp != nil {
+			return resp, nil
+		}
+		payload, err := res.Marshal()
+		if resp := buildErrorResponse(err); resp != nil {
+			return resp, nil
+		}
+		response.Status = api.Status_OK
+		response.Payload = string(payload)
+		return response, nil
+	
+	case "run":
+		args, err := run.UnmarshalRunArguments([]byte(req.Arguments))
+		if resp := buildErrorResponse(err); resp != nil {
+			return resp, nil
+		}
+		opt := run.RunOptions{
+			Context:   context,
+			LoggerFD:  req.Fd,
+			Arguments: &args,
+		}
+		res, err := run.Run(opt)
+		if resp := buildErrorResponse(err); resp != nil {
+			return resp, nil
+		}
+		payload, err := res.Marshal()
+		if resp := buildErrorResponse(err); resp != nil {
+			return resp, nil
+		}
+		response.Status = api.Status_OK
+		response.Payload = string(payload)
+		return response, nil
+	
+	case "upsertVolume":
+		args, err := upsertVolume.UnmarshalUpsertVolumeArguments([]byte(req.Arguments))
+		if resp := buildErrorResponse(err); resp != nil {
+			return resp, nil
+		}
+		opt := upsertVolume.UpsertVolumeOptions{
+			Context:   context,
+			LoggerFD:  req.Fd,
+			Arguments: &args,
+		}
+		res, err := upsertVolume.UpsertVolume(opt)
 		if resp := buildErrorResponse(err); resp != nil {
 			return resp, nil
 		}
