@@ -6,7 +6,6 @@ for s in $SERVICES
 do  
     echo "Building service $s"
     cd $s
-    # make build
     VERSION=$(cat ./VERSION)
     GO_MOD_CANDIDATE=$s/v$VERSION
     LIST=$(git tag --list)
@@ -25,6 +24,7 @@ do
         echo "Creating new git tag $GO_MOD_CANDIDATE"
         git tag $GO_MOD_CANDIDATE
         git push --tags
+        make build
     fi
     cd ../
 done
