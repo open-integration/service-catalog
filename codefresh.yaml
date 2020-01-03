@@ -3,14 +3,6 @@ version: '1.0'
 stages:
 - Build
 
-definitions: 
-  steps:
-    - step: &dockerbuild
-        title: "Build Docker Image"
-        type: build
-        dockerfile: ""
-        working_directory: ${{CloneServices}}
-        image_name: service_catalog/git
 
 
 steps:
@@ -40,10 +32,12 @@ steps:
     title: Build All Docker Images
     type: parallel
     steps:
-      git:
-        <<: *dockerbuild
-        dockerfile: git/Dockerfile
+      git: &dockerbuild
+        title: "Build Docker Image"
+        type: build
+        working_directory: ${{CloneServices}}
         image_name: service_catalog/git
+        dockerfile: git/Dockerfile
         build_arguments:
           - NAME=git-0.2.0-linux-amd64
       docker:
