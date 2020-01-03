@@ -1,5 +1,18 @@
 version: '1.0'
 
+stages:
+- Build
+
+definitions: 
+  steps:
+    - step: &dockerbuild
+        title: "Build Docker Image"
+        type: build
+        dockerfile: ""
+        working_directory: ${{CloneServices}}
+        image_name: service_catalog/git
+
+
 steps:
 
   CloneServices:
@@ -21,7 +34,41 @@ steps:
     - git remote add origin https://olegsu:${{GITHUB_TOKEN}}@github.com/open-integration/service-catalog.git
     - sh ./.scripts/build.sh
     - echo $GOOGLE_SERVICE_ACCOUNT_B64 | base64 -d - > ${{CF_VOLUME_PATH}}/service-account.json
-    - cf_export KEY_FILE_PATH=${{CF_VOLUME_PATH}}/service-account.json
+    - cf_export KEY_FILE_PATH=${{CF_VOLUME_PATH}}/service-account.json 
+
+  BuildImages:
+    title: Build All Docker Images
+    type: parallel
+    steps:
+      git:
+        <<: *dockerbuild
+        dockerfile: git/Dockerfile
+        image_name: service_catalog/git
+        build_arguments:
+          - NAME=git-0.2.0-linux-amd64
+      docker:
+        <<: *dockerbuild
+        dockerfile: docker/Dockerfile
+        image_name: service_catalog/docker
+        build_arguments:
+          - NAME=docker-0.3.0-linux-amd64
+      googleSpreadsheet:
+        <<: *dockerbuild
+        dockerfile: google-spreadsheel/Dockerfile
+        image_name: service_catalog/google-spreadsheel
+        build_arguments:
+          - NAME=google-spreadsheel-0.8.0-linux-amd64
+      trello:
+        <<: *dockerbuild
+        dockerfile: trello/Dockerfile
+        image_name: service_catalog/trello
+        build_arguments:
+          - NAME=trello-0.8.0-linux-amd64
+    when:
+      branch:
+        only:
+        - master
+
 
   CreateRelease:
     title: Create Release
