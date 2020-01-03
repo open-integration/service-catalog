@@ -4,7 +4,7 @@ RUN apk update && apk add --no-cache ca-certificates && apk upgrade
 
 ARG NAME
 
-COPY ./dist/$NAME .
+COPY ./$DIR/dist/$NAME .
 
 RUN mv $NAME service
 
