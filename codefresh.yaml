@@ -2,8 +2,7 @@ version: '1.0'
 
 stages:
 - Build
-
-
+- Push
 
 steps:
 
@@ -15,6 +14,7 @@ steps:
     revision: ${{CF_REVISION}}
 
   BuildServices:
+    stage: Build
     title: Build Services
     image: golang:1.13.5-alpine3.10
     working_directory: ${{CloneServices}}
@@ -29,6 +29,7 @@ steps:
     - cf_export KEY_FILE_PATH=${{CF_VOLUME_PATH}}/service-account.json 
 
   BuildImages:
+    stage: Build
     title: Build All Docker Images
     type: parallel
     steps:
@@ -67,8 +68,8 @@ steps:
         only:
         - master
 
-
   PushImages:
+    stage: Push
     title: Push All Docker Images To Dockerhub
     type: parallel
     steps:
@@ -78,6 +79,7 @@ steps:
         candidate: ${{git}}
         image_name: openintegration/service_catalog-git
         registry: dockerhub
+        tag: latest
       push-docker:
         <<: *pushImage
         candidate: ${{docker}}
@@ -96,6 +98,7 @@ steps:
         - master
 
   CreateRelease:
+    stage: Push
     title: Create Release
     image: google/cloud-sdk
     working_directory: ${{CloneServices}}
