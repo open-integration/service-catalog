@@ -68,6 +68,33 @@ steps:
         - master
 
 
+  PushImages:
+    title: Push All Docker Images To Dockerhub
+    type: parallel
+    steps:
+      push-git: &pushImage
+        title: "Push Docker Image"
+        type: push
+        candidate: ${{git}}
+        image_name: openintegration/service_catalog-git
+        registry: dockerhub
+      push-docker:
+        <<: *pushImage
+        candidate: ${{docker}}
+        image_name: openintegration/service_catalog-docker
+      push-google-spreadsheet:
+        <<: *pushImage
+        candidate: ${{google-spreadsheet}}
+        image_name: openintegration/service_catalog-google-spreadsheet
+      push-trello:
+        <<: *pushImage
+        candidate: ${{trello}}
+        image_name: openintegration/service_catalog-trello
+    when:
+      branch:
+        only:
+        - master
+
   CreateRelease:
     title: Create Release
     image: google/cloud-sdk
