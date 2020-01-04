@@ -19,12 +19,12 @@ do
         fi
     done
     
+    make build
     if [ $ALREADY_EXISTS == "false" ]
     then
         echo "Creating new git tag $GO_MOD_CANDIDATE"
         git tag $GO_MOD_CANDIDATE
         git push --tags
-        make build
     fi
     cd ../
 done
