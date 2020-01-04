@@ -27,7 +27,9 @@ type (
 )
 
 func UpsertVolume(opt UpsertVolumeOptions) (*UpsertVolumeReturns, error) {
-	log := logger.NewFromFilePath(opt.LoggerFD)
+	log := logger.New(&logger.Options{
+		FilePath: opt.LoggerFD,
+	})
 	log.Debug("Connecting to daemon", "host", opt.Arguments.Host, "api-version", opt.Arguments.APIVersion)
 	c, err := client.NewClient(opt.Arguments.Host, opt.Arguments.APIVersion, nil, nil)
 	if err != nil {

@@ -27,7 +27,9 @@ type (
 )
 
 func Build(opt BuildOptions) (*BuildReturns, error) {
-	log := logger.NewFromFilePath(opt.LoggerFD)
+	log := logger.New(&logger.Options{
+		FilePath: opt.LoggerFD,
+	})
 	args := opt.Arguments
 	log.Debug("Connecting to daemon", "host", args.Host, "api-version", args.APIVersion, "build-context", args.BuildContext)
 	c, err := client.NewClient(args.Host, args.APIVersion, nil, nil)

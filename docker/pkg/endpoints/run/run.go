@@ -40,7 +40,9 @@ type (
 )
 
 func Run(opt RunOptions) (*RunReturns, error) {
-	log := logger.NewFromFilePath(opt.LoggerFD)
+	log := logger.New(&logger.Options{
+		FilePath: opt.LoggerFD,
+	})
 	writer, err := os.OpenFile(opt.LoggerFD, os.O_APPEND|os.O_WRONLY, os.ModeAppend)
 	if err != nil {
 		return nil, err

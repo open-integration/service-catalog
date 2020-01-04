@@ -18,16 +18,19 @@ type (
 )
 
 func Clone(opt CloneOptions) (*CloneReturns, error) {
-	writer, err := logger.NewWriter(opt.LoggerFD)
-	if err != nil {
-		return nil, err
-	}
+	log := logger.New(&logger.Options{
+		FilePath: opt.LoggerFD,
+	})
+	writer := log.FD()
 	cloneOptions := &git.CloneOptions{
 		URL:      opt.Arguments.Repo,
 		Progress: writer,
 		Auth:     buildAuthMethod(opt.Arguments.Provider, nil),
 	}
-	_, err = git.PlainClone(opt.Arguments.Path, false, cloneOptions)
+	_, err := git.PlainClone(opt.Arguments.Path, false, cloneOptions)
+	if err != nil {
+		return nil, err
+	}
 	return &CloneReturns{
 		Location: opt.Arguments.Path,
 	}, nil
