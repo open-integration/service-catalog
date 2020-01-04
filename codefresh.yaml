@@ -27,6 +27,10 @@ steps:
     - sh ./.scripts/build.sh
     - echo $GOOGLE_SERVICE_ACCOUNT_B64 | base64 -d - > ${{CF_VOLUME_PATH}}/service-account.json
     - cf_export KEY_FILE_PATH=${{CF_VOLUME_PATH}}/service-account.json 
+    - cf_export SERVICE_GIT_VERSION=$(cat git/VERSION)
+    - cf_export SERVICE_DOCKER_VERSION=$(cat docker/VERSION)
+    - cf_export SERVICE_GOOGLE_SPREADSHEET_VERSION=$(cat google-spreadsheet/VERSION)
+    - cf_export SERVICE_TRELLO_VERSION=$(cat trello/VERSION)
 
   BuildImages:
     stage: Build
@@ -40,28 +44,28 @@ steps:
         image_name: service_catalog/git
         dockerfile: git/Dockerfile
         build_arguments:
-          - NAME=git-0.3.0-linux-amd64
+          - NAME=git-${{SERVICE_GIT_VERSION}}-linux-amd64
           - DIR=git
       docker:
         <<: *dockerbuild
         dockerfile: docker/Dockerfile
         image_name: service_catalog/docker
         build_arguments:
-          - NAME=docker-0.4.0-linux-amd64
+          - NAME=docker-${{SERVICE_DOCKER_VERSION}}-linux-amd64
           - DIR=docker
       google-spreadsheet:
         <<: *dockerbuild
         dockerfile: google-spreadsheet/Dockerfile
         image_name: service_catalog/google-spreadsheet
         build_arguments:
-          - NAME=google-spreadsheet-0.10.0-linux-amd64
+          - NAME=google-spreadsheet-${{SERVICE_GOOGLE_SPREADSHEET_VERSION}}-linux-amd64
           - DIR=google-spreadsheet
       trello:
         <<: *dockerbuild
         dockerfile: trello/Dockerfile
         image_name: service_catalog/trello
         build_arguments:
-          - NAME=trello-0.9.0-linux-amd64
+          - NAME=trello-${{SERVICE_TRELLO_VERSION}}-linux-amd64
           - DIR=trello
     when:
       branch:
@@ -79,19 +83,30 @@ steps:
         candidate: ${{git}}
         image_name: openintegration/service_catalog-git
         registry: dockerhub
-        tag: latest
+        tags:
+        - latest
+        - ${{SERVICE_GIT_VERSION}}
       push-docker:
         <<: *pushImage
         candidate: ${{docker}}
         image_name: openintegration/service_catalog-docker
+        tags:
+        - latest
+        - ${{SERVICE_DOCKER_VERSION}}
       push-google-spreadsheet:
         <<: *pushImage
         candidate: ${{google-spreadsheet}}
         image_name: openintegration/service_catalog-google-spreadsheet
+        tags:
+        - latest
+        - ${{SERVICE_GOOGLE_SPREADSHEET_VERSION}}
       push-trello:
         <<: *pushImage
         candidate: ${{trello}}
         image_name: openintegration/service_catalog-trello
+        tags:
+        - latest
+        - ${{SERVICE_TRELLO_VERSION}}
     when:
       branch:
         only:
