@@ -40,28 +40,28 @@ steps:
         image_name: service_catalog/git
         dockerfile: git/Dockerfile
         build_arguments:
-          - NAME=git-0.2.0-linux-amd64
+          - NAME=git-0.3.0-linux-amd64
           - DIR=git
       docker:
         <<: *dockerbuild
         dockerfile: docker/Dockerfile
         image_name: service_catalog/docker
         build_arguments:
-          - NAME=docker-0.3.0-linux-amd64
+          - NAME=docker-0.4.0-linux-amd64
           - DIR=docker
       google-spreadsheet:
         <<: *dockerbuild
         dockerfile: google-spreadsheet/Dockerfile
         image_name: service_catalog/google-spreadsheet
         build_arguments:
-          - NAME=google-spreadsheet-0.8.0-linux-amd64
+          - NAME=google-spreadsheet-0.9.0-linux-amd64
           - DIR=google-spreadsheet
       trello:
         <<: *dockerbuild
         dockerfile: trello/Dockerfile
         image_name: service_catalog/trello
         build_arguments:
-          - NAME=trello-0.8.0-linux-amd64
+          - NAME=trello-0.9.0-linux-amd64
           - DIR=trello
     when:
       branch:

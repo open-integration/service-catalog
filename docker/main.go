@@ -34,7 +34,9 @@ type (
 func main() {
 
 	service := &Service{
-		logger: logger.New(nil),
+		logger: logger.New(&logger.Options{
+			LogToStdOut: true,
+		}),
 		box:    packr.NewBox("./configs"),
 	}
 	runServer(context.Background(), service, os.Getenv("PORT"), service.logger)
