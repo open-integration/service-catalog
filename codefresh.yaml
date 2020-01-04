@@ -54,7 +54,7 @@ steps:
         dockerfile: google-spreadsheet/Dockerfile
         image_name: service_catalog/google-spreadsheet
         build_arguments:
-          - NAME=google-spreadsheet-0.9.0-linux-amd64
+          - NAME=google-spreadsheet-0.10.0-linux-amd64
           - DIR=google-spreadsheet
       trello:
         <<: *dockerbuild

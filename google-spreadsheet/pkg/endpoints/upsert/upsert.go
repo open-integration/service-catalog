@@ -2,8 +2,8 @@ package upsert
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"time"
 
 	"github.com/open-integration/core/pkg/logger"
@@ -116,11 +116,8 @@ func Upsert(context context.Context, log logger.Logger, args *UpsertArguments) (
 	return &UpsertReturns{}, nil
 }
 
-func connect(serviceAccountFilePath string, spreadsheetID string, log logger.Logger) (*sheets.Service, error) {
-	b, err := ioutil.ReadFile(serviceAccountFilePath)
-	if err != nil {
-		return nil, err
-	}
+func connect(serviceAccount ServiceAccount, spreadsheetID string, log logger.Logger) (*sheets.Service, error) {
+	b, err := json.Marshal(serviceAccount)
 
 	driveScopes := []string{
 		drive.DriveScope,

@@ -19,12 +19,26 @@ func (r *UpsertArguments) Marshal() ([]byte, error) {
 }
 
 type UpsertArguments struct {
-	Rows           []Row  `json:"Rows"`          // Do upsert
-	ServiceAccount string `json:"ServiceAccount"`// Path to service-account.json file
-	SpreadsheetID  string `json:"SpreadsheetID"` // ID of the spreadsheet
+	Rows           []Row          `json:"Rows"`          // Do upsert
+	ServiceAccount ServiceAccount `json:"ServiceAccount"`// service-account
+	SpreadsheetID  string         `json:"SpreadsheetID"` // ID of the spreadsheet
 }
 
 type Row struct {
 	Data []interface{} `json:"Data"`        
 	ID   *string       `json:"ID,omitempty"`
+}
+
+// service-account
+type ServiceAccount struct {
+	AuthProviderX509CERTURL string `json:"auth_provider_x509_cert_url"`
+	AuthURI                 string `json:"auth_uri"`                   
+	ClientEmail             string `json:"client_email"`               
+	ClientID                string `json:"client_id"`                  
+	ClientX509CERTURL       string `json:"client_x509_cert_url"`       
+	PrivateKey              string `json:"private_key"`                
+	PrivateKeyID            string `json:"private_key_id"`             
+	ProjectID               string `json:"project_id"`                 
+	TokenURI                string `json:"token_uri"`                  
+	Type                    string `json:"type"`                       
 }
