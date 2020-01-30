@@ -1,0 +1,6 @@
+name: slack
+goModule: github.com/open-integration/service-catalog/jira
+endpoints:
+- name: message
+  arguments: ./configs/endpoints/message/arguments.json
+  returns: ./configs/endpoints/message/returns.json

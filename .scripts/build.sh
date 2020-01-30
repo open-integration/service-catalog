@@ -1,4 +1,4 @@
-SERVICES="trello google-spreadsheet git docker jira"
+SERVICES="trello google-spreadsheet git docker jira slack"
 
 echo ""
 
