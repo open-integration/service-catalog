@@ -31,6 +31,7 @@ steps:
     - cf_export SERVICE_DOCKER_VERSION=$(cat docker/VERSION)
     - cf_export SERVICE_GOOGLE_SPREADSHEET_VERSION=$(cat google-spreadsheet/VERSION)
     - cf_export SERVICE_TRELLO_VERSION=$(cat trello/VERSION)
+    - cf_export SERVICE_JIRA_VERSION=$(cat jira/VERSION)
 
   BuildImages:
     stage: Build
@@ -53,6 +54,13 @@ steps:
         build_arguments:
           - NAME=docker-${{SERVICE_DOCKER_VERSION}}-linux-amd64
           - DIR=docker
+      jira:
+        <<: *dockerbuild
+        dockerfile: docker/Dockerfile
+        image_name: service_catalog/jira
+        build_arguments:
+          - NAME=docker-${{SERVICE_JIRA_VERSION}}-linux-amd64
+          - DIR=jira
       google-spreadsheet:
         <<: *dockerbuild
         dockerfile: google-spreadsheet/Dockerfile
@@ -86,6 +94,15 @@ steps:
         tags:
         - latest
         - ${{SERVICE_GIT_VERSION}}
+      push-jira: &pushImage
+        title: "Push Docker Image"
+        type: push
+        candidate: ${{jira}}
+        image_name: openintegration/service_catalog-jira
+        registry: dockerhub
+        tags:
+        - latest
+        - ${{SERVICE_JIRA_VERSION}}
       push-docker:
         <<: *pushImage
         candidate: ${{docker}}

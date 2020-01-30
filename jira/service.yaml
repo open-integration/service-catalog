@@ -1,0 +1,6 @@
+name: jira
+goModule: github.com/open-integration/service-catalog/jira
+endpoints:
+- name: list
+  arguments: ./configs/endpoints/list/arguments.json
+  returns: ./configs/endpoints/list/returns.json

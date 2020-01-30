@@ -1,0 +1,43 @@
+{
+    "$id": "https://example.com/person.schema.json",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Jira List Task Arguments Schema",
+    "type": "object",
+    "properties": {
+      "API_Token": {
+        "type": "string",
+        "description": "Jira API token"
+      },
+      "Endpoint": {
+        "type": "string",
+        "description": "Jira endpoint"
+      },
+      "User": {
+        "description": "IDs to archive",
+        "type": "string"
+      },
+      "JQL": {
+        "description": "Jira Query Language string",
+        "type": "string"
+      },
+      "Sort": {
+        "description": "Jira sort properties",
+        "type": "string",
+        "examples": [
+          "priority asc, key"
+        ]
+      },
+      "QueryFields": {
+        "description": "Jira query fields to include in response",
+        "type": "string",
+        "examples": [
+          "assignee,created,priority,reporter,status,summary,updated,issuetype"
+        ]
+      }
+    },
+    "required": [
+        "API_Token",
+        "Endpoint",
+        "User"
+    ]
+  }
