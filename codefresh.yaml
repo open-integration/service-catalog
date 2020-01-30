@@ -59,7 +59,7 @@ steps:
         dockerfile: docker/Dockerfile
         image_name: service_catalog/jira
         build_arguments:
-          - NAME=docker-${{SERVICE_JIRA_VERSION}}-linux-amd64
+          - NAME=jira-${{SERVICE_JIRA_VERSION}}-linux-amd64
           - DIR=jira
       google-spreadsheet:
         <<: *dockerbuild
@@ -94,12 +94,10 @@ steps:
         tags:
         - latest
         - ${{SERVICE_GIT_VERSION}}
-      push-jira: &pushImage
-        title: "Push Docker Image"
-        type: push
+      push-jira:
+        <<: *pushImage
         candidate: ${{jira}}
         image_name: openintegration/service_catalog-jira
-        registry: dockerhub
         tags:
         - latest
         - ${{SERVICE_JIRA_VERSION}}
