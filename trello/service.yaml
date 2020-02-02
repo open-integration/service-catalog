@@ -7,3 +7,6 @@ endpoints:
 - name: getcards
   arguments: ./configs/endpoints/getcards/arguments.json
   returns: ./configs/endpoints/getcards/returns.json
+- name: addcard
+  arguments: ./configs/endpoints/addcard/arguments.json
+  returns: ./configs/endpoints/addcard/returns.json
