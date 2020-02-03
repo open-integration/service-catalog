@@ -15,6 +15,7 @@ import (
 
 	api "github.com/open-integration/core/pkg/api/v1"
 
+	"github.com/open-integration/service-catalog/trello/pkg/endpoints/addcard"
 	"github.com/open-integration/service-catalog/trello/pkg/endpoints/archivecards"
 
 	"github.com/open-integration/service-catalog/trello/pkg/endpoints/getcards"
@@ -81,6 +82,26 @@ func (s *Service) Call(context context.Context, req *api.CallRequest) (*api.Call
 			return resp, nil
 		}
 		res, err := getcards.Getcards(context, log, &args)
+		if resp := buildErrorResponse(err); resp != nil {
+			return resp, nil
+		}
+		payload, err := res.Marshal()
+		if resp := buildErrorResponse(err); resp != nil {
+			return resp, nil
+		}
+		response.Status = api.Status_OK
+		response.Payload = string(payload)
+		return response, nil
+	case "addcard":
+		args, err := addcard.UnmarshalAddcardArguments([]byte(req.Arguments))
+		if resp := buildErrorResponse(err); resp != nil {
+			return resp, nil
+		}
+		res, err := addcard.Addcard(addcard.AddcardOptions{
+			Context:   context,
+			LoggerFD:  req.Fd,
+			Arguments: &args,
+		})
 		if resp := buildErrorResponse(err); resp != nil {
 			return resp, nil
 		}
