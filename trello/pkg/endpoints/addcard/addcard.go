@@ -36,5 +36,6 @@ func Addcard(opt AddcardOptions) (*AddcardReturns, error) {
 		log.Error("Failed to create card", "boardID", args.Board, "error", err.Error())
 		return nil, err
 	}
+	log.Debug("card added", "boardID", args.Board)
 	return &AddcardReturns{}, nil
 }
