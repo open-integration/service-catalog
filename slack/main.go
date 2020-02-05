@@ -15,7 +15,7 @@ import (
 
 	api "github.com/open-integration/core/pkg/api/v1"
 
-	"github.com/open-integration/service-catalog/jira/pkg/endpoints/message"
+	"github.com/open-integration/service-catalog/slack/pkg/endpoints/message"
 )
 
 type (

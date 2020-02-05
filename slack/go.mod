@@ -1,4 +1,4 @@
-module github.com/open-integration/service-catalog/jira
+module github.com/open-integration/service-catalog/slack
 
 go 1.13
 
