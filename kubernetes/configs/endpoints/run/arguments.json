@@ -24,7 +24,7 @@
           }
         },
         "required": [
-          "type"
+          "Type"
         ]
       },
       "Pod": {

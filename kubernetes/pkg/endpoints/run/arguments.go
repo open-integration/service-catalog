@@ -19,9 +19,20 @@ func (r *RunArguments) Marshal() ([]byte, error) {
 }
 
 type RunArguments struct {
-	Detached *bool       `json:"Detached,omitempty"`// Start the pod and do not wait for it(ignoring any timeout argument)
-	Pod      *string     `json:"Pod,omitempty"`     
-	Timeout  *float64    `json:"Timeout,omitempty"` // How long to wait for the pod to finished before sending termination request(when detached; argument provided, this property ignored)
-	Name     interface{} `json:"Name"`              
-	Image    interface{} `json:"Image"`             
+	Auth     *Auth    `json:"Auth,omitempty"`    
+	Detached *bool    `json:"Detached,omitempty"`// Start the pod and do not wait for it(ignoring any timeout argument)
+	Pod      string   `json:"Pod"`               
+	Timeout  *float64 `json:"Timeout,omitempty"` // How long to wait for the pod to finished before sending termination request(when detached; argument provided, this property ignored)
 }
+
+type Auth struct {
+	CRT   *string `json:"Crt,omitempty"`  
+	Host  *string `json:"Host,omitempty"` 
+	Token *string `json:"Token,omitempty"`
+	Type  Type    `json:"Type"`           
+}
+
+type Type string
+const (
+	KubernetesServiceAccount Type = "KubernetesServiceAccount"
+)
