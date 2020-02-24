@@ -1,0 +1,6 @@
+name: kubernetes
+goModule: github.com/open-integration/service-catalog/kubernetes
+endpoints:
+- name: run
+  arguments: ./configs/endpoints/run/arguments.json
+  returns: ./configs/endpoints/run/returns.json

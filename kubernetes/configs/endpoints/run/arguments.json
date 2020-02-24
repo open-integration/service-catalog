@@ -1,0 +1,45 @@
+{
+    "$id": "https://example.com/person.schema.json",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "Auth": {
+        "type": "object",
+        "properties": {
+          "Type": {
+            "type": "string",
+            "enum": [
+              "KubernetesServiceAccount"
+            ],
+            "default": "KubernetesServiceAccount"
+          },
+          "Host": {
+            "type": "string"
+          },
+          "Token": {
+            "type": "string"
+          },
+          "Crt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "Pod": {
+        "type": "string"
+      },
+      "Timeout": {
+        "type": "number",
+        "description": "How long to wait for the pod to finished before sending termination request(when detached argument provided, this property ignored)"
+      },
+      "Detached": {
+        "type": "boolean",
+        "description": "Start the pod and do not wait for it(ignoring any timeout argument)"
+      }
+    },
+    "required": [
+      "Pod"
+    ]
+  }
