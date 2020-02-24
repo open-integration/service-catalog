@@ -32,7 +32,8 @@ steps:
     - cf_export SERVICE_GOOGLE_SPREADSHEET_VERSION=$(cat google-spreadsheet/VERSION)
     - cf_export SERVICE_TRELLO_VERSION=$(cat trello/VERSION)
     - cf_export SERVICE_JIRA_VERSION=$(cat jira/VERSION)
-    - cf_export SERVICE_SLACK_VERSION=$(cat jira/VERSION)
+    - cf_export SERVICE_SLACK_VERSION=$(cat slack/VERSION)
+    - cf_export SERVICE_KUBERNETES_VERSION=$(cat kubernetes/VERSION)
 
   BuildImages:
     stage: Build
@@ -83,6 +84,13 @@ steps:
         build_arguments:
           - NAME=trello-${{SERVICE_TRELLO_VERSION}}-linux-amd64
           - DIR=trello
+      kubernetes:
+        <<: *dockerbuild
+        dockerfile: kubernetes/Dockerfile
+        image_name: service_catalog/kubernetes
+        build_arguments:
+          - NAME=kubernetes-${{SERVICE_KUBERNETES_VERSION}}-linux-amd64
+          - DIR=kubernetes
     when:
       branch:
         only:
@@ -137,6 +145,13 @@ steps:
         tags:
         - latest
         - ${{SERVICE_TRELLO_VERSION}}
+      push-kubernetes:
+        <<: *pushImage
+        candidate: ${{kubernetes}}
+        image_name: openintegration/service_catalog-trello
+        tags:
+        - latest
+        - ${{SERVICE_KUBERNETES_VERSION}}
     when:
       branch:
         only:
