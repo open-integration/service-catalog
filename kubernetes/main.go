@@ -15,6 +15,7 @@ import (
 
 	api "github.com/open-integration/core/pkg/api/v1"
 
+	"github.com/open-integration/service-catalog/kubernetes/pkg/endpoints/createpvc"
 	"github.com/open-integration/service-catalog/kubernetes/pkg/endpoints/run"
 )
 
@@ -28,8 +29,10 @@ type (
 func main() {
 
 	service := &Service{
-		logger: logger.New(nil),
-		box:    packr.NewBox("./configs"),
+		logger: logger.New(&logger.Options{
+			LogToStdOut: true,
+		}),
+		box: packr.NewBox("./configs"),
 	}
 	runServer(context.Background(), service, os.Getenv("PORT"), service.logger)
 }
@@ -46,7 +49,7 @@ func (s *Service) Init(context context.Context, req *api.InitRequest) (*api.Init
 }
 
 func (s *Service) Call(context context.Context, req *api.CallRequest) (*api.CallResponse, error) {
-	s.logger.Debug("Request", "endpoint", req.Endpoint)
+	s.logger.Debug("Request", "endpoint", req.Endpoint, "logger", req.Fd)
 
 	response := &api.CallResponse{}
 
@@ -63,6 +66,27 @@ func (s *Service) Call(context context.Context, req *api.CallRequest) (*api.Call
 			Arguments: &args,
 		}
 		res, err := run.Run(opt)
+		if resp := buildErrorResponse(err); resp != nil {
+			return resp, nil
+		}
+		payload, err := res.Marshal()
+		if resp := buildErrorResponse(err); resp != nil {
+			return resp, nil
+		}
+		response.Status = api.Status_OK
+		response.Payload = string(payload)
+		return response, nil
+	case "createpvc":
+		args, err := createpvc.UnmarshalCreatepvcArguments([]byte(req.Arguments))
+		if resp := buildErrorResponse(err); resp != nil {
+			return resp, nil
+		}
+		opt := createpvc.CreatepvcOptions{
+			Context:   context,
+			LoggerFD:  req.Fd,
+			Arguments: &args,
+		}
+		res, err := createpvc.Createpvc(opt)
 		if resp := buildErrorResponse(err); resp != nil {
 			return resp, nil
 		}

@@ -19,7 +19,7 @@ func (r *RunArguments) Marshal() ([]byte, error) {
 }
 
 type RunArguments struct {
-	Auth     *Auth    `json:"Auth,omitempty"`    
+	Auth     Auth     `json:"Auth"`              
 	Detached *bool    `json:"Detached,omitempty"`// Start the pod and do not wait for it(ignoring any timeout argument)
 	Pod      string   `json:"Pod"`               
 	Timeout  *float64 `json:"Timeout,omitempty"` // How long to wait for the pod to finished before sending termination request(when detached; argument provided, this property ignored)

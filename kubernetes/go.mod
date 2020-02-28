@@ -7,5 +7,6 @@ require (
 	github.com/open-integration/core v0.34.0
 	google.golang.org/grpc v1.27.0
 	k8s.io/api v0.17.0
+	k8s.io/apimachinery v0.17.0
 	k8s.io/client-go v0.17.0
 )

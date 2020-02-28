@@ -27,20 +27,12 @@
           "Type"
         ]
       },
-      "Pod": {
+      "PVC": {
         "type": "string"
-      },
-      "Timeout": {
-        "type": "number",
-        "description": "How long to wait for the pod to finished before sending termination request(when detached argument provided, this property ignored)"
-      },
-      "Detached": {
-        "type": "boolean",
-        "description": "Start the pod and do not wait for it(ignoring any timeout argument)"
       }
     },
     "required": [
-      "Pod",
+      "PVC",
       "Auth"
     ]
   }

@@ -4,3 +4,6 @@ endpoints:
 - name: run
   arguments: ./configs/endpoints/run/arguments.json
   returns: ./configs/endpoints/run/returns.json
+- name: createpvc
+  arguments: ./configs/endpoints/createpvc/arguments.json
+  returns: ./configs/endpoints/createpvc/returns.json
