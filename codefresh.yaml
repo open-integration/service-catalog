@@ -119,7 +119,7 @@ steps:
         - ${{SERVICE_JIRA_VERSION}}
       push-slack:
         <<: *pushImage
-        candidate: ${{jira}}
+        candidate: ${{slack}}
         image_name: openintegration/service_catalog-slack
         tags:
         - latest
@@ -148,7 +148,7 @@ steps:
       push-kubernetes:
         <<: *pushImage
         candidate: ${{kubernetes}}
-        image_name: openintegration/service_catalog-trello
+        image_name: openintegration/service_catalog-kubernetes
         tags:
         - latest
         - ${{SERVICE_KUBERNETES_VERSION}}
