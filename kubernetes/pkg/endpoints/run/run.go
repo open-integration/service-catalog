@@ -12,6 +12,7 @@ import (
 
 	"github.com/open-integration/core/pkg/logger"
 	v1 "k8s.io/api/core/v1"
+	kubeErrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/fields"
 	"k8s.io/client-go/kubernetes"
@@ -64,7 +65,25 @@ func Run(opt RunOptions) (*RunReturns, error) {
 
 	_, err = io.Copy(log.FD(), podLogs)
 	client.CoreV1().Pods(pod.ObjectMeta.Namespace).Delete(pod.ObjectMeta.Name, nil)
-	waitForPod("Terminated", client, pod, log)
+	ticker := time.NewTicker(5 * time.Second)
+	quit := make(chan struct{})
+	for {
+		select {
+		case <-ticker.C:
+			_, err := client.CoreV1().Pods(pod.ObjectMeta.Namespace).Get(pod.ObjectMeta.Name, metav1.GetOptions{})
+			if kubeErrors.IsNotFound(err) {
+				log.Debug("Pod deleted")
+				close(quit)
+			}
+		case <-time.After(time.Second * 60):
+			close(quit)
+			log.Debug("Pod was not deleted after 60 seconds, moving on...")
+		case <-quit:
+			ticker.Stop()
+			break
+		}
+	}
+
 	return &RunReturns{}, err
 }
 
