@@ -64,6 +64,7 @@ func Run(opt RunOptions) (*RunReturns, error) {
 
 	_, err = io.Copy(log.FD(), podLogs)
 	client.CoreV1().Pods(pod.ObjectMeta.Namespace).Delete(pod.ObjectMeta.Name, nil)
+	waitForPod("Terminated", client, pod, log)
 	return &RunReturns{}, err
 }
 
