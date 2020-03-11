@@ -64,13 +64,23 @@ func Run(opt RunOptions) (*RunReturns, error) {
 	defer podLogs.Close()
 
 	_, err = io.Copy(log.FD(), podLogs)
+	log.Error("Deleting pod after copy")
 	client.CoreV1().Pods(pod.ObjectMeta.Namespace).Delete(pod.ObjectMeta.Name, nil)
+	waitForPodToDisappear(pod.ObjectMeta.Name, pod.ObjectMeta.Namespace, client, log)
+	return &RunReturns{}, err
+}
+
+func waitForPodToDisappear(name string, namespace string, client *kubernetes.Clientset, log logger.Logger) {
 	ticker := time.NewTicker(5 * time.Second)
 	quit := make(chan struct{})
 	for {
 		select {
 		case <-ticker.C:
-			_, err := client.CoreV1().Pods(pod.ObjectMeta.Namespace).Get(pod.ObjectMeta.Name, metav1.GetOptions{})
+			log.Debug("Checking pod to be deleted")
+			_, err := client.CoreV1().Pods(namespace).Get(name, metav1.GetOptions{})
+			if err != nil {
+				log.Debug(err.Error())
+			}
 			if kubeErrors.IsNotFound(err) {
 				log.Debug("Pod deleted")
 				close(quit)
@@ -79,12 +89,11 @@ func Run(opt RunOptions) (*RunReturns, error) {
 			close(quit)
 			log.Debug("Pod was not deleted after 60 seconds, moving on...")
 		case <-quit:
+			log.Debug("Channel closed, quiting")
 			ticker.Stop()
-			break
+			return
 		}
 	}
-
-	return &RunReturns{}, err
 }
 
 func waitForPod(status string, client *kubernetes.Clientset, pod *v1.Pod, logger logger.Logger) error {
