@@ -1,0 +1,6 @@
+name: exec
+project: github.com/open-integration/service-catalog
+version: 0.0.2
+endpoints:
+- name: command
+  arguments: ./configs/endpoints/command/arguments.json
