@@ -20,20 +20,23 @@ steps:
     working_directory: ${{CloneServices}}
     commands:
     - rm -rf dist || true 
-    - apk update && apk add git make
+    - apk update && apk add git make py-pip jq
+    - pip install yq
     - go get -u github.com/gobuffalo/packr/packr
     - git remote rm origin
     - git remote add origin https://olegsu:${{GITHUB_TOKEN}}@github.com/open-integration/service-catalog.git
     - sh ./.scripts/build.sh
     - echo $GOOGLE_SERVICE_ACCOUNT_B64 | base64 -d - > ${{CF_VOLUME_PATH}}/service-account.json
     - cf_export KEY_FILE_PATH=${{CF_VOLUME_PATH}}/service-account.json 
+    
+    
     - cf_export SERVICE_GIT_VERSION=$(cat git/VERSION)
-    - cf_export SERVICE_DOCKER_VERSION=$(cat docker/VERSION)
     - cf_export SERVICE_GOOGLE_SPREADSHEET_VERSION=$(cat google-spreadsheet/VERSION)
     - cf_export SERVICE_TRELLO_VERSION=$(cat trello/VERSION)
     - cf_export SERVICE_JIRA_VERSION=$(cat jira/VERSION)
     - cf_export SERVICE_SLACK_VERSION=$(cat slack/VERSION)
     - cf_export SERVICE_KUBERNETES_VERSION=$(cat kubernetes/VERSION)
+    - cf_export SERVICE_EXEC_VERSION=$(cat exec/VERSION)
 
   BuildImages:
     stage: Build
@@ -49,13 +52,6 @@ steps:
         build_arguments:
           - NAME=git-${{SERVICE_GIT_VERSION}}-linux-amd64
           - DIR=git
-      docker:
-        <<: *dockerbuild
-        dockerfile: docker/Dockerfile
-        image_name: service_catalog/docker
-        build_arguments:
-          - NAME=docker-${{SERVICE_DOCKER_VERSION}}-linux-amd64
-          - DIR=docker
       slack:
         <<: *dockerbuild
         dockerfile: docker/Dockerfile
@@ -63,6 +59,13 @@ steps:
         build_arguments:
           - NAME=slack-${{SERVICE_SLACK_VERSION}}-linux-amd64
           - DIR=slack
+      exec:
+        <<: *dockerbuild
+        dockerfile: docker/Dockerfile
+        image_name: service_catalog/exec
+        build_arguments:
+          - NAME=slack-${{SERVICE_EXEC_VERSION}}-linux-amd64
+          - DIR=exec
       jira:
         <<: *dockerbuild
         dockerfile: docker/Dockerfile
@@ -124,13 +127,13 @@ steps:
         tags:
         - latest
         - ${{SERVICE_SLACK_VERSION}}
-      push-docker:
+      push-exec:
         <<: *pushImage
-        candidate: ${{docker}}
-        image_name: openintegration/service_catalog-docker
+        candidate: ${{exec}}
+        image_name: openintegration/service_catalog-exec
         tags:
         - latest
-        - ${{SERVICE_DOCKER_VERSION}}
+        - ${{SERVICE_EXEC_VERSION}}
       push-google-spreadsheet:
         <<: *pushImage
         candidate: ${{google-spreadsheet}}

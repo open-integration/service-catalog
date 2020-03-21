@@ -2,7 +2,7 @@ echo "Authentication with GCS project $GCS_PROJECT"
 gcloud auth activate-service-account --key-file $KEY_FILE_PATH
 echo "Authenticated!"
 
-SERVICES="trello google-spreadsheet git docker jira slack kubernetes"
+SERVICES="trello google-spreadsheet git jira slack kubernetes exec"
 
 echo ""
 
