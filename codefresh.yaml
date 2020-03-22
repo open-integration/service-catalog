@@ -55,21 +55,21 @@ steps:
           - DIR=git
       slack:
         <<: *dockerbuild
-        dockerfile: docker/Dockerfile
+        dockerfile: slack/Dockerfile
         image_name: service_catalog/slack
         build_arguments:
           - NAME=slack-${{SERVICE_SLACK_VERSION}}-linux-amd64
           - DIR=slack
       exec:
         <<: *dockerbuild
-        dockerfile: docker/Dockerfile
+        dockerfile: exec/Dockerfile
         image_name: service_catalog/exec
         build_arguments:
           - NAME=slack-${{SERVICE_EXEC_VERSION}}-linux-amd64
           - DIR=exec
       jira:
         <<: *dockerbuild
-        dockerfile: docker/Dockerfile
+        dockerfile: jira/Dockerfile
         image_name: service_catalog/jira
         build_arguments:
           - NAME=jira-${{SERVICE_JIRA_VERSION}}-linux-amd64
