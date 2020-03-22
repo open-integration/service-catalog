@@ -49,6 +49,7 @@ steps:
         working_directory: ${{CloneServices}}
         image_name: service_catalog/git
         dockerfile: git/Dockerfile
+        registry: dockerhub
         build_arguments:
           - NAME=git-${{SERVICE_GIT_VERSION}}-linux-amd64
           - DIR=git
