@@ -65,7 +65,7 @@ steps:
         dockerfile: exec/Dockerfile
         image_name: service_catalog/exec
         build_arguments:
-          - NAME=slack-${{SERVICE_EXEC_VERSION}}-linux-amd64
+          - NAME=exec-${{SERVICE_EXEC_VERSION}}-linux-amd64
           - DIR=exec
       jira:
         <<: *dockerbuild
