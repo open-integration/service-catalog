@@ -1,0 +1,7 @@
+name: http
+project: github.com/open-integration/service-catalog
+version: 0.0.1
+endpoints:
+- name: call
+  arguments: ./configs/endpoints/call/arguments.json
+  returns: ./configs/endpoints/call/returns.json

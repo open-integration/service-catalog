@@ -1,4 +1,4 @@
-SERVICES="trello google-spreadsheet git jira slack kubernetes exec"
+SERVICES="trello google-spreadsheet git jira slack kubernetes exec http"
 
 echo ""
 

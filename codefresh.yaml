@@ -37,6 +37,7 @@ steps:
     - cf_export SERVICE_SLACK_VERSION=$(cat slack/VERSION)
     - cf_export SERVICE_KUBERNETES_VERSION=$(cat kubernetes/VERSION)
     - cf_export SERVICE_EXEC_VERSION=$(cat exec/VERSION)
+    - cf_export SERVICE_HTTP_VERSION=$(cat http/VERSION)
 
   BuildImages:
     stage: Build
@@ -60,6 +61,13 @@ steps:
         build_arguments:
           - NAME=slack-${{SERVICE_SLACK_VERSION}}-linux-amd64
           - DIR=slack
+      http:
+        <<: *dockerbuild
+        dockerfile: http/Dockerfile
+        image_name: service_catalog/http
+        build_arguments:
+          - NAME=http-${{SERVICE_HTTP_VERSION}}-linux-amd64
+          - DIR=http
       exec:
         <<: *dockerbuild
         dockerfile: exec/Dockerfile
@@ -128,6 +136,13 @@ steps:
         tags:
         - latest
         - ${{SERVICE_SLACK_VERSION}}
+      push-http:
+        <<: *pushImage
+        candidate: ${{http}}
+        image_name: openintegration/service_catalog-http
+        tags:
+        - latest
+        - ${{SERVICE_HTTP_VERSION}}
       push-exec:
         <<: *pushImage
         candidate: ${{exec}}
