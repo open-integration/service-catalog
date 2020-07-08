@@ -32,6 +32,7 @@ steps:
     
     - cf_export SERVICE_GIT_VERSION=$(cat git/VERSION)
     - cf_export SERVICE_GOOGLE_SPREADSHEET_VERSION=$(cat google-spreadsheet/VERSION)
+    - cf_export SERVICE_GOOGLE_CALENDAR_VERSION=$(cat google-calendar/VERSION)
     - cf_export SERVICE_TRELLO_VERSION=$(cat trello/VERSION)
     - cf_export SERVICE_JIRA_VERSION=$(cat jira/VERSION)
     - cf_export SERVICE_SLACK_VERSION=$(cat slack/VERSION)
@@ -89,6 +90,13 @@ steps:
         build_arguments:
           - NAME=google-spreadsheet-${{SERVICE_GOOGLE_SPREADSHEET_VERSION}}-linux-amd64
           - DIR=google-spreadsheet
+      google-calendar:
+        <<: *dockerbuild
+        dockerfile: google-calendar/Dockerfile
+        image_name: service_catalog/google-calendar
+        build_arguments:
+          - NAME=google-calendar-${{SERVICE_GOOGLE_CALENDAR_VERSION}}-linux-amd64
+          - DIR=google-calendar
       trello:
         <<: *dockerbuild
         dockerfile: trello/Dockerfile
@@ -157,6 +165,13 @@ steps:
         tags:
         - latest
         - ${{SERVICE_GOOGLE_SPREADSHEET_VERSION}}
+      push-google-caledar:
+        <<: *pushImage
+        candidate: ${{google-calendar}}
+        image_name: openintegration/service_catalog-google-calendar
+        tags:
+        - latest
+        - ${{SERVICE_GOOGLE_CALENDAR_VERSION}}
       push-trello:
         <<: *pushImage
         candidate: ${{trello}}

@@ -1,0 +1,6 @@
+name: google-calendar
+project: github.com/open-integration/service-catalog
+endpoints:
+- name: getEvents
+  arguments: ./configs/endpoints/getEvents/arguments.json
+  returns: ./configs/endpoints/getEvents/returns.json
