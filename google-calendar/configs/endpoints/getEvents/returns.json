@@ -164,7 +164,7 @@
             "type": "object"
           },
           "ConferenceParametersAddOnParameters": {
-            "id": "#/definitions/ConferenceParametersAddOnParameters",
+            "id": "ConferenceParametersAddOnParameters",
             "properties": {
               "parameters": {
                 "additionalProperties": {
