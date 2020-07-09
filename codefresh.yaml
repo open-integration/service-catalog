@@ -52,6 +52,7 @@ steps:
         image_name: service_catalog/git
         dockerfile: git/Dockerfile
         registry: dockerhub
+        disable_push: true
         build_arguments:
           - NAME=git-${{SERVICE_GIT_VERSION}}-linux-amd64
           - DIR=git
