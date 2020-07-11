@@ -1,10 +1,8 @@
 {
     "$id": "https://example.com/person.schema.json",
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "id": "Event",
     "definitions": {
         "Calendar": {
-            "id": "Calendar",
             "properties": {
                 "conferenceProperties": {
                     "$ref": "#/definitions/ConferenceProperties",
@@ -32,11 +30,6 @@
                     "type": "string"
                 },
                 "summary": {
-                    "annotations": {
-                        "required": [
-                            "calendar.calendars.insert"
-                        ]
-                    },
                     "description": "Title of the calendar.",
                     "type": "string"
                 },
@@ -48,7 +41,6 @@
             "type": "object"
         },
         "ConferenceData": {
-            "id": "ConferenceData",
             "properties": {
                 "conferenceId": {
                     "description": "The ID of the conference.\nCan be used by developers to keep track of conferences, should not be displayed to users.\nValues for solution types:  \n- \"eventHangout\": unset.\n- \"eventNamedHangout\": the name of the Hangout.\n- \"hangoutsMeet\": the 10-letter meeting code, for example \"aaa-bbbb-ccc\".\n- \"addOn\": defined by 3P conference provider.  Optional.",
@@ -85,7 +77,6 @@
             "type": "object"
         },
         "ConferenceProperties": {
-            "id": "ConferenceProperties",
             "properties": {
                 "allowedConferenceSolutionTypes": {
                     "description": "The types of conference solutions that are supported for this calendar.\nThe possible values are:  \n- \"eventHangout\" \n- \"eventNamedHangout\" \n- \"hangoutsMeet\"  Optional.",
@@ -98,7 +89,6 @@
             "type": "object"
         },
         "ConferenceSolution": {
-            "id": "ConferenceSolution",
             "properties": {
                 "iconUri": {
                     "description": "The user-visible icon for this solution.",
@@ -116,7 +106,6 @@
             "type": "object"
         },
         "CreateConferenceRequest": {
-            "id": "CreateConferenceRequest",
             "properties": {
                 "conferenceSolutionKey": {
                     "$ref": "#/definitions/ConferenceSolutionKey",
@@ -134,7 +123,6 @@
             "type": "object"
         },
         "ConferenceRequestStatus": {
-            "id": "ConferenceRequestStatus",
             "properties": {
               "statusCode": {
                 "description": "The current status of the conference create request. Read-only.\nThe possible values are:  \n- \"pending\": the conference create request is still being processed.\n- \"success\": the conference create request succeeded, the entry points are populated.\n- \"failure\": the conference create request failed, there are no entry points.",
@@ -144,7 +132,6 @@
             "type": "object"
         },
         "ConferenceSolutionKey": {
-            "id": "ConferenceSolutionKey",
             "properties": {
                 "type": {
                     "description": "The conference solution type.\nIf a client encounters an unfamiliar or empty type, it should still be able to display the entry points. However, it should disallow modifications.\nThe possible values are:  \n- \"eventHangout\" for Hangouts for consumers (http://hangouts.google.com)\n- \"eventNamedHangout\" for classic Hangouts for G Suite users (http://hangouts.google.com)\n- \"hangoutsMeet\" for Google Meet (http://meet.google.com)\n- \"addOn\" for 3P conference providers",
@@ -154,7 +141,6 @@
             "type": "object"
         },
         "ConferenceParameters": {
-            "id": "ConferenceParameters",
             "properties": {
               "addOnParameters": {
                 "$ref": "#/definitions/ConferenceParametersAddOnParameters",
@@ -162,9 +148,8 @@
               }
             },
             "type": "object"
-          },
-          "ConferenceParametersAddOnParameters": {
-            "id": "ConferenceParametersAddOnParameters",
+        },
+        "ConferenceParametersAddOnParameters": {
             "properties": {
               "parameters": {
                 "additionalProperties": {
@@ -176,7 +161,6 @@
             "type": "object"
         },
         "EntryPoint": {
-            "id": "EntryPoint",
             "properties": {
                 "accessCode": {
                     "description": "The access code to access the conference. The maximum length is 128 characters.\nWhen creating new conference data, populate only the subset of {meetingCode, accessCode, passcode, password, pin} fields that match the terminology that the conference provider uses. Only the populated fields should be displayed.\nOptional.",
@@ -225,7 +209,6 @@
             "type": "object"
         },
         "Event": {
-            "id": "Event",
             "properties": {
                 "anyoneCanAddSelf": {
                     "default": "false",
@@ -261,7 +244,6 @@
                 },
                 "created": {
                     "description": "Creation time of the event (as a RFC3339 timestamp). Read-only.",
-                    "format": "date-time",
                     "type": "string"
                 },
                 "creator": {
@@ -293,13 +275,6 @@
                 },
                 "end": {
                     "$ref": "#/definitions/EventDateTime",
-                    "annotations": {
-                        "required": [
-                            "calendar.events.import",
-                            "calendar.events.insert",
-                            "calendar.events.update"
-                        ]
-                    },
                     "description": "The (exclusive) end time of the event. For a recurring event, this is the end time of the first instance."
                 },
                 "endTimeUnspecified": {
@@ -342,7 +317,6 @@
                         },
                         "height": {
                             "description": "The gadget's height in pixels. The height must be an integer greater than 0. Optional.",
-                            "format": "int32",
                             "type": "integer"
                         },
                         "iconLink": {
@@ -371,7 +345,6 @@
                         },
                         "width": {
                             "description": "The gadget's width in pixels. The width must be an integer greater than 0. Optional.",
-                            "format": "int32",
                             "type": "integer"
                         }
                     },
@@ -401,11 +374,6 @@
                     "type": "string"
                 },
                 "iCalUID": {
-                    "annotations": {
-                        "required": [
-                            "calendar.events.import"
-                        ]
-                    },
                     "description": "Event unique identifier as defined in RFC5545. It is used to uniquely identify events accross calendaring systems and must be supplied when importing events via the import method.\nNote that the icalUID and the id are not identical and only one of them should be supplied at event creation time. One difference in their semantics is that in recurring events, all occurrences of one event have different ids while they all share the same icalUIDs.",
                     "type": "string"
                 },
@@ -489,7 +457,6 @@
                 },
                 "sequence": {
                     "description": "Sequence number as per iCalendar.",
-                    "format": "int32",
                     "type": "integer"
                 },
                 "source": {
@@ -508,13 +475,6 @@
                 },
                 "start": {
                     "$ref": "#/definitions/EventDateTime",
-                    "annotations": {
-                        "required": [
-                            "calendar.events.import",
-                            "calendar.events.insert",
-                            "calendar.events.update"
-                        ]
-                    },
                     "description": "The (inclusive) start time of the event. For a recurring event, this is the start time of the first instance."
                 },
                 "status": {
@@ -532,7 +492,6 @@
                 },
                 "updated": {
                     "description": "Last modification time of the event (as a RFC3339 timestamp). Read-only.",
-                    "format": "date-time",
                     "type": "string"
                 },
                 "visibility": {
@@ -544,7 +503,6 @@
             "type": "object"
         },
         "EventAttachment": {
-            "id": "EventAttachment",
             "properties": {
                 "fileId": {
                     "description": "ID of the attached file. Read-only.\nFor Google Drive files, this is the ID of the corresponding Files resource entry in the Drive API.",
@@ -570,12 +528,10 @@
             "type": "object"
         },
         "EventAttendee": {
-            "id": "EventAttendee",
             "properties": {
                 "additionalGuests": {
                     "default": "0",
                     "description": "Number of additional guests. Optional. The default is 0.",
-                    "format": "int32",
                     "type": "integer"
                 },
                 "comment": {
@@ -621,16 +577,13 @@
             "type": "object"
         },
         "EventDateTime": {
-            "id": "EventDateTime",
             "properties": {
                 "date": {
                     "description": "The date, in the format \"yyyy-mm-dd\", if this is an all-day event.",
-                    "format": "date",
                     "type": "string"
                 },
                 "dateTime": {
                     "description": "The time, as a combined date-time value (formatted according to RFC3339). A time zone offset is required unless a time zone is explicitly specified in timeZone.",
-                    "format": "date-time",
                     "type": "string"
                 },
                 "timeZone": {
@@ -641,7 +594,6 @@
             "type": "object"
         },
         "EventReminder": {
-            "id": "EventReminder",
             "properties": {
                 "method": {
                     "description": "The method used by this reminder. Possible values are:  \n- \"email\" - Reminders are sent via email. \n- \"popup\" - Reminders are sent via a UI popup.  \nRequired when adding a reminder.",
@@ -649,7 +601,6 @@
                 },
                 "minutes": {
                     "description": "Number of minutes before the start of the event when the reminder should trigger. Valid values are between 0 and 40320 (4 weeks in minutes).\nRequired when adding a reminder.",
-                    "format": "int32",
                     "type": "integer"
                 }
             },
