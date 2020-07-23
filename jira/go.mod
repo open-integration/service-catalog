@@ -7,7 +7,7 @@ require (
 	github.com/go-jira/jira v1.0.22
 	github.com/gobuffalo/packr v1.30.1
 	github.com/gofrs/flock v0.7.1 // indirect
-	github.com/open-integration/core v0.27.0
+	github.com/open-integration/core v0.65.0
 	github.com/theckman/go-flock v0.7.1 // indirect
 	google.golang.org/grpc v1.27.0
 )
